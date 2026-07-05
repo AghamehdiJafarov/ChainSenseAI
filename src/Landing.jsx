@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import {
   TrendingUp, Package, ShoppingCart, Users, Route, Warehouse, Wrench,
   ScanSearch, ShieldAlert, Timer, Tags, FileText, MessageSquare, Boxes,
-  Leaf, ArrowRight, Play, Globe,
+  Leaf, ArrowRight, Play, Globe, Download,
 } from "lucide-react";
 
 // ВСТАВЬ СЮДА ID своего YouTube-ролика (часть после watch?v= или youtu.be/).
@@ -131,21 +131,21 @@ function SupplyGraph() {
 }
 
 const MODULES = [
-  { code: "SC-01", ic: TrendingUp,   en: "Demand forecast",     ru: "Прогноз спроса" },
-  { code: "SC-02", ic: Package,      en: "Inventory",           ru: "Запасы" },
-  { code: "SC-03", ic: ShoppingCart, en: "Procurement",         ru: "Закупки" },
-  { code: "SC-04", ic: Users,        en: "Supplier scoring",    ru: "Поставщики" },
-  { code: "SC-05", ic: Route,        en: "Routing",             ru: "Маршруты" },
-  { code: "SC-06", ic: Warehouse,    en: "Warehouse",           ru: "Склад" },
-  { code: "SC-07", ic: Wrench,       en: "Maintenance",         ru: "Обслуживание" },
-  { code: "SC-08", ic: ScanSearch,   en: "Quality",             ru: "Качество" },
-  { code: "SC-09", ic: ShieldAlert,  en: "Risk",                ru: "Риски" },
-  { code: "SC-10", ic: Timer,        en: "ETA",                 ru: "Прогноз ETA" },
-  { code: "SC-11", ic: Tags,         en: "Classification",      ru: "Классификация" },
-  { code: "SC-12", ic: FileText,     en: "Invoice OCR",         ru: "OCR счетов" },
-  { code: "SC-13", ic: MessageSquare,en: "AI assistant",        ru: "AI-ассистент" },
-  { code: "SC-14", ic: Boxes,        en: "Packing",             ru: "Упаковка" },
-  { code: "SC-15", ic: Leaf,         en: "Sustainability",      ru: "Устойчивость" },
+  { code: "SC-01", ic: TrendingUp,   en: "Demand forecast",     ru: "Прогноз спроса",   az: "Tələb proqnozu" },
+  { code: "SC-02", ic: Package,      en: "Inventory",           ru: "Запасы",           az: "Ehtiyat" },
+  { code: "SC-03", ic: ShoppingCart, en: "Procurement",         ru: "Закупки",          az: "Satınalma" },
+  { code: "SC-04", ic: Users,        en: "Supplier scoring",    ru: "Поставщики",       az: "Təchizatçı qiyməti" },
+  { code: "SC-05", ic: Route,        en: "Routing",             ru: "Маршруты",         az: "Marşrut" },
+  { code: "SC-06", ic: Warehouse,    en: "Warehouse",           ru: "Склад",            az: "Anbar" },
+  { code: "SC-07", ic: Wrench,       en: "Maintenance",         ru: "Обслуживание",     az: "Texniki xidmət" },
+  { code: "SC-08", ic: ScanSearch,   en: "Quality",             ru: "Качество",         az: "Keyfiyyət" },
+  { code: "SC-09", ic: ShieldAlert,  en: "Risk",                ru: "Риски",            az: "Risk" },
+  { code: "SC-10", ic: Timer,        en: "ETA",                 ru: "Прогноз ETA",      az: "ETA proqnozu" },
+  { code: "SC-11", ic: Tags,         en: "Classification",      ru: "Классификация",    az: "Təsnifat" },
+  { code: "SC-12", ic: FileText,     en: "Invoice OCR",         ru: "OCR счетов",       az: "Sənədlər və OCR" },
+  { code: "SC-13", ic: MessageSquare,en: "AI assistant",        ru: "AI-ассистент",     az: "AI köməkçi" },
+  { code: "SC-14", ic: Boxes,        en: "Packing",             ru: "Упаковка",         az: "Qablaşdırma" },
+  { code: "SC-15", ic: Leaf,         en: "Sustainability",      ru: "Устойчивость",     az: "Dayanıqlıq" },
 ];
 
 export default function Landing() {
@@ -154,6 +154,7 @@ export default function Landing() {
   const T = {
     ru: {
       nav_demo: "Открыть платформу",
+      nav_deck: "Скачать презентацию",
       hero_eyebrow: "Supply Chain Intelligence · 15 модулей",
       hero_h: "Аналитика цепочки поставок,\nкоторая связана в единый контур",
       hero_p: "Пятнадцать модулей — от прогноза спроса до углеродного учёта — работают не поодиночке, а как конвейер: спрос питает запасы, запасы — закупки, риск поставщика входит в реестр рисков, маршрут — в расчёт ETA и CO₂. Три языка. Три AI-функции на модели Claude.",
@@ -177,10 +178,15 @@ export default function Landing() {
       cta_h: "Посмотреть платформу в работе",
       cta_p: "Пятнадцать модулей доступны сразу, без регистрации.",
       cta_btn: "Открыть платформу",
+      deck_eyebrow: "Презентация",
+      deck_h: "Полный обзор в одном файле",
+      deck_p: "Пятнадцать модулей, алгоритмы и интерфейс на трёх языках — в PDF-презентации.",
+      deck_btn: "Скачать презентацию (PDF)",
       foot: "Supply chain intelligence · RU / EN / AZ",
     },
     en: {
       nav_demo: "Open platform",
+      nav_deck: "Download deck",
       hero_eyebrow: "Supply Chain Intelligence · 15 modules",
       hero_h: "Supply chain analytics,\nwired into a single loop",
       hero_p: "Fifteen modules — from demand forecasting to carbon accounting — don't work in isolation. They form a pipeline: demand feeds inventory, inventory feeds procurement, supplier risk enters the risk register, route distance drives ETA and CO₂. Three languages. Three AI features on Claude.",
@@ -204,6 +210,42 @@ export default function Landing() {
       cta_h: "See the platform in action",
       cta_p: "Fifteen modules available instantly, no sign-up.",
       cta_btn: "Open platform",
+      deck_eyebrow: "Deck",
+      deck_h: "The full overview in one file",
+      deck_p: "Fifteen modules, the algorithms, and the trilingual interface — in a PDF deck.",
+      deck_btn: "Download deck (PDF)",
+      foot: "Supply chain intelligence · RU / EN / AZ",
+    },
+    az: {
+      nav_demo: "Platformanı aç",
+      nav_deck: "Təqdimatı yüklə",
+      hero_eyebrow: "Supply Chain Intelligence · 15 modul",
+      hero_h: "Təchizat zəncirinin analitikası,\nvahid kontura bağlanmış",
+      hero_p: "On beş modul — tələb proqnozundan karbon uçotuna qədər — ayrı-ayrı deyil, konveyer kimi işləyir: tələb ehtiyatı qidalandırır, ehtiyat satınalmanı, təchizatçı riski risk reyestrinə daxil olur, marşrut isə ETA və CO₂ hesabına. Üç dil. Claude modelində üç AI funksiyası.",
+      hero_cta: "Platformanı aç",
+      hero_watch: "Promonu izlə",
+      prob_eyebrow: "Problem",
+      prob_h: "Planlaşdırma Excel və dağınıq kalkulyatorlarda yaşayır",
+      prob_p: "Proqnoz bir cədvəldə, ehtiyat başqasında, risklər menecerin yaddaşında. Məlumat axmır, qərarlar kor-koranə verilir, o9 və ya Kinaxis kimi bahalı SaaS platformaları ildə yüz minlərlə dollar tələb edir, azərbaycan dilini bilmir və yerli spesifikanı — VÖEN, manat, Orta Dəhliz marşrutlarını — nəzərə almır.",
+      sol_eyebrow: "Həll",
+      sol_h: "On beş ada əvəzinə vahid data şini",
+      sol_p: "Əsasında — ümumi vəziyyət təbəqəsi: bir SKU portfeli, bir təchizatçı hovuzu, bir daşıma dəsti. Bağlantını aktivləşdirirsən — və modul əl ilə daxiletmə əvəzinə qonşusunun datasını götürür. Bu, kalkulyatorlar dəstini vahid məhsul hekayəsinə çevirir.",
+      mod_eyebrow: "Modullar",
+      mod_h: "On beş alət, bir konveyer",
+      mod_p: "Hər modul öz vəzifəsini həll edir və nəticəni zəncir üzrə ötürür.",
+      vid_eyebrow: "Promo",
+      vid_h: "Necə işləyir",
+      vid_p: "İki dəqiqəlik platforma icmalı.",
+      link_eyebrow: "Bağlılıq",
+      link_h: "Məlumat zəncir üzrə axır",
+      link_p: "SC-01 → SC-02 → SC-03. Təchizatçı qiyməti SC-04 risk reyestrinə SC-09 sətir kimi daxil olur. Marşrut məsafəsi SC-05 ETA SC-10 və karbon izini SC-15 qidalandırır. Backtest, Monte-Carlo, loqnormal kvantillər, hesabların arifmetik yoxlanışı — arxa planda əsl alqoritmlər, boş deyil.",
+      cta_h: "Platformanı işdə görün",
+      cta_p: "On beş modul dərhal əlçatandır, qeydiyyatsız.",
+      cta_btn: "Platformanı aç",
+      deck_eyebrow: "Təqdimat",
+      deck_h: "Tam icmal bir faylda",
+      deck_p: "On beş modul, alqoritmlər və üç dilli interfeys — PDF təqdimatında.",
+      deck_btn: "Təqdimatı yüklə (PDF)",
       foot: "Supply chain intelligence · RU / EN / AZ",
     },
   };
@@ -224,13 +266,19 @@ export default function Landing() {
           <div className="lp-eyebrow ml-1 hidden sm:block" style={{ color: "#5f7285" }}>SUPPLY AI</div>
           <div className="ml-auto flex items-center gap-2">
             <div className="flex items-center gap-1 mr-1">
-              {["ru", "en"].map((l) => (
+              {["az", "ru", "en"].map((l) => (
                 <button key={l} onClick={() => setLang(l)}
                   className="lp-btn rounded-lg px-2.5 py-1.5 text-xs font-bold uppercase"
                   style={lang === l ? { background: "#fff", color: INK } : { background: "rgba(255,255,255,0.06)", color: "#9fb0c0" }}>
                   {l}
                 </button>))}
             </div>
+            <a href="/ChainSenseAI.pdf" download
+              className="lp-btn hidden sm:inline-flex items-center gap-1.5 rounded-xl px-3 py-2 text-sm font-semibold"
+              style={{ background: "rgba(255,255,255,0.06)", color: "#dfe6ee", border: "1px solid rgba(120,150,170,0.25)" }}
+              title={t.nav_deck}>
+              <Download size={15} /> <span className="hidden md:inline">{t.nav_deck}</span>
+            </a>
             <Link to="/app"
               className="lp-btn inline-flex items-center gap-1.5 rounded-xl px-4 py-2 text-sm font-semibold"
               style={{ background: ACCENT, color: "#fff", boxShadow: "0 6px 20px rgba(13,122,104,0.35)" }}>
@@ -349,12 +397,12 @@ export default function Landing() {
                               alignItems: "center", justifyContent: "center", gap: 12, textAlign: "center", padding: 24 }}>
                   <Play size={40} color={AMBER} />
                   <div className="lp-display font-semibold" style={{ color: "#dfe6ee" }}>
-                    {lang === "ru" ? "Место для промо-ролика" : "Promo video placeholder"}
+                    {{ ru: "Место для промо-ролика", en: "Promo video placeholder", az: "Promo video yeri" }[lang]}
                   </div>
                   <div className="text-sm" style={{ color: "#7c8ea0", maxWidth: 360 }}>
-                    {lang === "ru"
-                      ? "Вставь ID ролика в переменную YT_ID в начале файла Landing.jsx"
-                      : "Set your video ID in the YT_ID variable at the top of Landing.jsx"}
+                    {{ ru: "Вставь ID ролика в переменную YT_ID в начале файла Landing.jsx",
+                       en: "Set your video ID in the YT_ID variable at the top of Landing.jsx",
+                       az: "Video ID-ni Landing.jsx faylının əvvəlindəki YT_ID dəyişəninə daxil et" }[lang]}
                   </div>
                 </div>
               ) : (
@@ -382,19 +430,43 @@ export default function Landing() {
           <div className="reveal" style={{ transitionDelay: ".12s" }}>
             <div className="rounded-3xl p-8 space-y-4" style={{ background: "rgba(13,24,38,0.55)", border: "1px solid rgba(120,150,170,0.18)" }}>
               {[
-                { a: "SC-01", b: "SC-02", l: lang === "ru" ? "спрос → запасы" : "demand → inventory" },
-                { a: "SC-02", b: "SC-03", l: lang === "ru" ? "запасы → закупки" : "inventory → procurement" },
-                { a: "SC-04", b: "SC-09", l: lang === "ru" ? "поставщик → риск" : "supplier → risk" },
-                { a: "SC-05", b: "SC-10", l: lang === "ru" ? "маршрут → ETA" : "route → ETA" },
-                { a: "SC-05", b: "SC-15", l: lang === "ru" ? "маршрут → CO₂" : "route → CO₂" },
+                { a: "SC-01", b: "SC-02", l: { ru: "спрос → запасы", en: "demand → inventory", az: "tələb → ehtiyat" } },
+                { a: "SC-02", b: "SC-03", l: { ru: "запасы → закупки", en: "inventory → procurement", az: "ehtiyat → satınalma" } },
+                { a: "SC-04", b: "SC-09", l: { ru: "поставщик → риск", en: "supplier → risk", az: "təchizatçı → risk" } },
+                { a: "SC-05", b: "SC-10", l: { ru: "маршрут → ETA", en: "route → ETA", az: "marşrut → ETA" } },
+                { a: "SC-05", b: "SC-15", l: { ru: "маршрут → CO₂", en: "route → CO₂", az: "marşrut → CO₂" } },
               ].map((row, i) => (
                 <div key={i} className="flex items-center gap-3">
                   <span className="lp-num text-xs font-bold rounded-lg px-2.5 py-1" style={{ background: "rgba(13,122,104,0.16)", color: "#5cc4b0" }}>{row.a}</span>
                   <ArrowRight size={14} color="#5f7285" />
                   <span className="lp-num text-xs font-bold rounded-lg px-2.5 py-1" style={{ background: "rgba(217,142,43,0.14)", color: "#e0a860" }}>{row.b}</span>
-                  <span className="text-sm ml-1" style={{ color: "#8ea0b1" }}>{row.l}</span>
+                  <span className="text-sm ml-1" style={{ color: "#8ea0b1" }}>{row.l[lang]}</span>
                 </div>))}
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ---------- deck download ---------- */}
+      <section className="px-6 py-20" style={{ background: "#081019" }}>
+        <div className="max-w-3xl mx-auto reveal">
+          <div className="rounded-3xl p-8 md:p-10 flex flex-col md:flex-row md:items-center gap-6"
+               style={{ background: "linear-gradient(135deg, rgba(13,122,104,0.12), rgba(217,142,43,0.08))",
+                        border: "1px solid rgba(13,122,104,0.3)" }}>
+            <div className="w-16 h-16 rounded-2xl flex items-center justify-center flex-shrink-0"
+                 style={{ background: "rgba(13,122,104,0.18)", border: "1px solid " + ACCENT + "55" }}>
+              <FileText size={28} color={ACCENT} />
+            </div>
+            <div className="flex-1">
+              <div className="lp-eyebrow mb-2" style={{ color: ACCENT }}>{t.deck_eyebrow}</div>
+              <h2 className="lp-display font-bold text-xl mb-1.5" style={{ color: "#f4f8fb" }}>{t.deck_h}</h2>
+              <p className="text-sm" style={{ color: "#a9b8c7" }}>{t.deck_p}</p>
+            </div>
+            <a href="/ChainSenseAI.pdf" download
+              className="lp-btn inline-flex items-center justify-center gap-2 rounded-xl px-6 py-3 text-sm font-semibold flex-shrink-0"
+              style={{ background: ACCENT, color: "#fff", boxShadow: "0 10px 30px rgba(13,122,104,0.4)" }}>
+              <Download size={16} /> {t.deck_btn}
+            </a>
           </div>
         </div>
       </section>
