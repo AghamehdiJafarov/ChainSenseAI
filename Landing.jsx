@@ -131,21 +131,21 @@ function SupplyGraph() {
 }
 
 const MODULES = [
-  { code: "SC-01", ic: TrendingUp,   en: "Demand forecast",     ru: "Прогноз спроса" },
-  { code: "SC-02", ic: Package,      en: "Inventory",           ru: "Запасы" },
-  { code: "SC-03", ic: ShoppingCart, en: "Procurement",         ru: "Закупки" },
-  { code: "SC-04", ic: Users,        en: "Supplier scoring",    ru: "Поставщики" },
-  { code: "SC-05", ic: Route,        en: "Routing",             ru: "Маршруты" },
-  { code: "SC-06", ic: Warehouse,    en: "Warehouse",           ru: "Склад" },
-  { code: "SC-07", ic: Wrench,       en: "Maintenance",         ru: "Обслуживание" },
-  { code: "SC-08", ic: ScanSearch,   en: "Quality",             ru: "Качество" },
-  { code: "SC-09", ic: ShieldAlert,  en: "Risk",                ru: "Риски" },
-  { code: "SC-10", ic: Timer,        en: "ETA",                 ru: "Прогноз ETA" },
-  { code: "SC-11", ic: Tags,         en: "Classification",      ru: "Классификация" },
-  { code: "SC-12", ic: FileText,     en: "Invoice OCR",         ru: "OCR счетов" },
-  { code: "SC-13", ic: MessageSquare,en: "AI assistant",        ru: "AI-ассистент" },
-  { code: "SC-14", ic: Boxes,        en: "Packing",             ru: "Упаковка" },
-  { code: "SC-15", ic: Leaf,         en: "Sustainability",      ru: "Устойчивость" },
+  { code: "SC-01", ic: TrendingUp,   en: "Demand forecast",     ru: "Прогноз спроса",   az: "Tələb proqnozu" },
+  { code: "SC-02", ic: Package,      en: "Inventory",           ru: "Запасы",           az: "Ehtiyat" },
+  { code: "SC-03", ic: ShoppingCart, en: "Procurement",         ru: "Закупки",          az: "Satınalma" },
+  { code: "SC-04", ic: Users,        en: "Supplier scoring",    ru: "Поставщики",       az: "Təchizatçı qiyməti" },
+  { code: "SC-05", ic: Route,        en: "Routing",             ru: "Маршруты",         az: "Marşrut" },
+  { code: "SC-06", ic: Warehouse,    en: "Warehouse",           ru: "Склад",            az: "Anbar" },
+  { code: "SC-07", ic: Wrench,       en: "Maintenance",         ru: "Обслуживание",     az: "Texniki xidmət" },
+  { code: "SC-08", ic: ScanSearch,   en: "Quality",             ru: "Качество",         az: "Keyfiyyət" },
+  { code: "SC-09", ic: ShieldAlert,  en: "Risk",                ru: "Риски",            az: "Risk" },
+  { code: "SC-10", ic: Timer,        en: "ETA",                 ru: "Прогноз ETA",      az: "ETA proqnozu" },
+  { code: "SC-11", ic: Tags,         en: "Classification",      ru: "Классификация",    az: "Təsnifat" },
+  { code: "SC-12", ic: FileText,     en: "Invoice OCR",         ru: "OCR счетов",       az: "Sənədlər və OCR" },
+  { code: "SC-13", ic: MessageSquare,en: "AI assistant",        ru: "AI-ассистент",     az: "AI köməkçi" },
+  { code: "SC-14", ic: Boxes,        en: "Packing",             ru: "Упаковка",         az: "Qablaşdırma" },
+  { code: "SC-15", ic: Leaf,         en: "Sustainability",      ru: "Устойчивость",     az: "Dayanıqlıq" },
 ];
 
 export default function Landing() {
@@ -397,12 +397,12 @@ export default function Landing() {
                               alignItems: "center", justifyContent: "center", gap: 12, textAlign: "center", padding: 24 }}>
                   <Play size={40} color={AMBER} />
                   <div className="lp-display font-semibold" style={{ color: "#dfe6ee" }}>
-                    {lang === "ru" ? "Место для промо-ролика" : "Promo video placeholder"}
+                    {{ ru: "Место для промо-ролика", en: "Promo video placeholder", az: "Promo video yeri" }[lang]}
                   </div>
                   <div className="text-sm" style={{ color: "#7c8ea0", maxWidth: 360 }}>
-                    {lang === "ru"
-                      ? "Вставь ID ролика в переменную YT_ID в начале файла Landing.jsx"
-                      : "Set your video ID in the YT_ID variable at the top of Landing.jsx"}
+                    {{ ru: "Вставь ID ролика в переменную YT_ID в начале файла Landing.jsx",
+                       en: "Set your video ID in the YT_ID variable at the top of Landing.jsx",
+                       az: "Video ID-ni Landing.jsx faylının əvvəlindəki YT_ID dəyişəninə daxil et" }[lang]}
                   </div>
                 </div>
               ) : (
@@ -430,17 +430,17 @@ export default function Landing() {
           <div className="reveal" style={{ transitionDelay: ".12s" }}>
             <div className="rounded-3xl p-8 space-y-4" style={{ background: "rgba(13,24,38,0.55)", border: "1px solid rgba(120,150,170,0.18)" }}>
               {[
-                { a: "SC-01", b: "SC-02", l: lang === "ru" ? "спрос → запасы" : "demand → inventory" },
-                { a: "SC-02", b: "SC-03", l: lang === "ru" ? "запасы → закупки" : "inventory → procurement" },
-                { a: "SC-04", b: "SC-09", l: lang === "ru" ? "поставщик → риск" : "supplier → risk" },
-                { a: "SC-05", b: "SC-10", l: lang === "ru" ? "маршрут → ETA" : "route → ETA" },
-                { a: "SC-05", b: "SC-15", l: lang === "ru" ? "маршрут → CO₂" : "route → CO₂" },
+                { a: "SC-01", b: "SC-02", l: { ru: "спрос → запасы", en: "demand → inventory", az: "tələb → ehtiyat" } },
+                { a: "SC-02", b: "SC-03", l: { ru: "запасы → закупки", en: "inventory → procurement", az: "ehtiyat → satınalma" } },
+                { a: "SC-04", b: "SC-09", l: { ru: "поставщик → риск", en: "supplier → risk", az: "təchizatçı → risk" } },
+                { a: "SC-05", b: "SC-10", l: { ru: "маршрут → ETA", en: "route → ETA", az: "marşrut → ETA" } },
+                { a: "SC-05", b: "SC-15", l: { ru: "маршрут → CO₂", en: "route → CO₂", az: "marşrut → CO₂" } },
               ].map((row, i) => (
                 <div key={i} className="flex items-center gap-3">
                   <span className="lp-num text-xs font-bold rounded-lg px-2.5 py-1" style={{ background: "rgba(13,122,104,0.16)", color: "#5cc4b0" }}>{row.a}</span>
                   <ArrowRight size={14} color="#5f7285" />
                   <span className="lp-num text-xs font-bold rounded-lg px-2.5 py-1" style={{ background: "rgba(217,142,43,0.14)", color: "#e0a860" }}>{row.b}</span>
-                  <span className="text-sm ml-1" style={{ color: "#8ea0b1" }}>{row.l}</span>
+                  <span className="text-sm ml-1" style={{ color: "#8ea0b1" }}>{row.l[lang]}</span>
                 </div>))}
             </div>
           </div>
