@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   TrendingUp, Package, ShoppingCart, Users, Route, Warehouse, Wrench,
@@ -7,77 +7,99 @@ import {
 } from "lucide-react";
 
 // ВСТАВЬ СЮДА ID своего YouTube-ролика (часть после watch?v= или youtu.be/).
-// Пример: из https://www.youtube.com/watch?v=dQw4w9WgXcQ  →  YT_ID = "dQw4w9WgXcQ"
 const YT_ID = "uCftzNo4RRs";
 
-const INK = "#101826";
-const ACCENT = "#0d7a68";
-const AMBER = "#d98e2b";
+/* ---- Meridian tokens (dark landing) ---- */
+const JADE = "#2EC29B";        // brand accent on dark
+const JADE_BTN = "#12886C";    // button fill
+const BRASS = "#D9B36C";       // counterpoint — risk semantics only
+const INK = "#0A100E";         // page base
+const PANEL = "#0D1512";       // raised dark surface
+const LINE = "rgba(160,176,167,0.14)";
+const TXT = "#DFE8E2";
+const MUT = "#9DABA3";
+const FAINT = "#5F6F67";
 
-// ---- палитра, шрифты и анимации лендинга (наследуют идентичность приложения) ----
 const CSS = `
-@import url("https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap");
+.lp { font-family: Inter, ui-sans-serif, system-ui, sans-serif; color: ${TXT}; background: ${INK};
+      overflow-x: hidden; font-size: 15px; }
+.lp-display { font-family: 'Schibsted Grotesk', Inter, sans-serif; letter-spacing: -0.028em; }
+.lp-num { font-family: 'Spline Sans Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+.lp-eyebrow { font-family: 'Spline Sans Mono', ui-monospace, monospace; letter-spacing: 0.16em;
+              text-transform: uppercase; font-size: 10.5px; font-weight: 600; }
 
-.lp { font-family: Inter, ui-sans-serif, system-ui, sans-serif; color: #dfe6ee; background: #0a1420;
-      overflow-x: hidden; }
-.lp-display { font-family: Sora, Inter, sans-serif; }
-.lp-num { font-family: Sora, Inter, sans-serif; font-feature-settings: "tnum"; }
-.lp-eyebrow { font-family: Sora, sans-serif; letter-spacing: 0.22em; text-transform: uppercase;
-              font-size: 11px; font-weight: 700; }
-
-/* атмосферный движущийся градиент hero */
-@keyframes lpGrad {
-  0%   { background-position: 0% 50%; }
-  50%  { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
+/* engineering-paper grid over the hero — the platform's drawing board */
 .lp-hero-bg {
-  background: radial-gradient(1200px 700px at 15% 10%, rgba(13,122,104,0.16), transparent 60%),
-              radial-gradient(1000px 600px at 85% 30%, rgba(217,142,43,0.10), transparent 55%),
-              linear-gradient(135deg, #081019, #0a1420 40%, #0d1826);
-  background-size: 180% 180%;
-  animation: lpGrad 22s ease-in-out infinite;
+  background:
+    radial-gradient(1100px 640px at 12% -10%, rgba(46,194,155,0.075), transparent 60%),
+    radial-gradient(900px 560px at 96% 24%, rgba(217,179,108,0.045), transparent 55%),
+    linear-gradient(180deg, #0A110F 0%, ${INK} 70%);
+}
+.lp-grid {
+  background-image:
+    linear-gradient(rgba(157,171,163,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(157,171,163,0.05) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(900px 520px at 40% 20%, black, transparent 78%);
+  -webkit-mask-image: radial-gradient(900px 520px at 40% 20%, black, transparent 78%);
 }
 
-/* импульсы, бегущие по рёбрам графа цепочки */
-@keyframes lpFlow { to { stroke-dashoffset: -18; } }
-.lp-edge { stroke: rgba(120,150,170,0.25); stroke-width: 1; }
-.lp-flow { stroke: ${ACCENT}; stroke-width: 1.6; stroke-dasharray: 3 15;
-           animation: lpFlow 1.1s linear infinite; }
+/* meridian rail: section marker */
+.lp-rail { display:flex; align-items:center; gap:12px; }
+.lp-rail::after { content:""; flex:0 0 56px; height:1px; background:linear-gradient(90deg, rgba(46,194,155,0.5), transparent); }
+.lp-diamond { width:7px; height:7px; transform:rotate(45deg); background:${JADE}; flex-shrink:0; }
+
+/* pulses running along the chain graph */
+@keyframes lpFlow { to { stroke-dashoffset: -20; } }
+.lp-edge { stroke: rgba(157,171,163,0.16); stroke-width: 1; }
+.lp-flow { stroke: ${JADE}; stroke-width: 1.2; stroke-dasharray: 2 18; opacity:.9;
+           animation: lpFlow 1.6s linear infinite; }
 @keyframes lpNodePulse {
-  0%,100% { transform: scale(1);   opacity: 0.9; }
-  50%     { transform: scale(1.18); opacity: 1; }
+  0%,100% { transform: scale(1);   opacity: 0.92; }
+  50%     { transform: scale(1.12); opacity: 1; }
 }
 .lp-node { transform-box: fill-box; transform-origin: center;
-           animation: lpNodePulse 3.2s ease-in-out infinite; }
+           animation: lpNodePulse 3.6s ease-in-out infinite; }
 
-/* появление по скроллу */
-.reveal { opacity: 0; transform: translateY(26px); transition: opacity .7s cubic-bezier(.2,.7,.2,1),
+/* scroll reveal */
+.reveal { opacity: 0; transform: translateY(24px); transition: opacity .7s cubic-bezier(.2,.7,.2,1),
           transform .7s cubic-bezier(.2,.7,.2,1); }
 .reveal.in { opacity: 1; transform: none; }
 
-/* плавающие карточки модулей в hero */
-@keyframes lpFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
-.lp-chip { animation: lpFloat 5s ease-in-out infinite; }
+@keyframes lpBlink { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+.lp-blink { animation: lpBlink 2.6s ease-in-out infinite; }
 
-/* мягкое мерцание акцентной точки */
-@keyframes lpBlink { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
-.lp-blink { animation: lpBlink 2.4s ease-in-out infinite; }
-
-.lp-btn { transition: transform .18s ease, box-shadow .18s ease, background .18s ease; }
+.lp-btn { transition: transform .16s ease, box-shadow .16s ease, background .16s ease, border-color .16s ease; }
 .lp-btn:hover { transform: translateY(-2px); }
+.lp-btn-primary { background:${JADE_BTN}; color:#fff; border:1px solid rgba(46,194,155,0.45);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.14), 0 8px 24px rgba(18,136,108,0.32); }
+.lp-btn-primary:hover { background:#13977A; box-shadow: inset 0 1px 0 rgba(255,255,255,0.14), 0 12px 32px rgba(18,136,108,0.42); }
+.lp-btn-ghost { background:rgba(255,255,255,0.04); color:${TXT}; border:1px solid ${LINE}; }
+.lp-btn-ghost:hover { border-color:rgba(160,176,167,0.32); background:rgba(255,255,255,0.06); }
 
-.lp-card { transition: transform .3s cubic-bezier(.2,.7,.2,1), border-color .3s, background .3s; }
-.lp-card:hover { transform: translateY(-6px); border-color: rgba(13,122,104,0.55);
-                 background: rgba(16,26,40,0.9); }
+.lp-card { transition: transform .3s cubic-bezier(.2,.7,.2,1), border-color .3s, background .3s, box-shadow .3s; }
+.lp-card:hover { transform: translateY(-4px); border-color: rgba(46,194,155,0.4);
+                 background: #101A16; box-shadow: 0 16px 40px -12px rgba(0,0,0,0.5); }
+.lp-card:hover .lp-card-node { background:${JADE}; border-color:${JADE}; }
+.lp-card:hover .lp-card-ic { color:${JADE}; }
+
+/* corner ticks on framed media */
+.lp-frame { position: relative; }
+.lp-tick { position:absolute; width:14px; height:14px; border-color:rgba(46,194,155,0.55); border-style:solid; }
+.lp-tick.tl { top:-1px; left:-1px; border-width:1.5px 0 0 1.5px; }
+.lp-tick.tr { top:-1px; right:-1px; border-width:1.5px 1.5px 0 0; }
+.lp-tick.bl { bottom:-1px; left:-1px; border-width:0 0 1.5px 1.5px; }
+.lp-tick.br { bottom:-1px; right:-1px; border-width:0 1.5px 1.5px 0; }
+
+.lp a:focus-visible, .lp button:focus-visible { outline:2px solid ${JADE}; outline-offset:3px; border-radius:6px; }
 
 @media (prefers-reduced-motion: reduce) {
-  .lp-hero-bg, .lp-flow, .lp-node, .lp-chip, .lp-blink { animation: none !important; }
+  .lp-flow, .lp-node, .lp-blink { animation: none !important; }
   .reveal { opacity: 1; transform: none; transition: none; }
+  .lp-btn, .lp-card { transition: none; }
 }
 `;
 
-// хук scroll-reveal: помечает элементы классом .in при входе в вьюпорт
 function useReveal() {
   useEffect(() => {
     const els = document.querySelectorAll(".reveal");
@@ -90,39 +112,49 @@ function useReveal() {
   }, []);
 }
 
-// анимированный SVG-граф цепочки: узлы-модули, соединённые потоками
+/* Живой контур цепочки: станции-ромбы, соединённые потоками.
+   Один цвет — jade; латунь только у узла риска. */
 function SupplyGraph() {
-  // координаты узлов (viewBox 0 0 520 300), порядок = конвейер платформы
   const nodes = [
-    { x: 60,  y: 150, ic: TrendingUp,   c: ACCENT },
-    { x: 150, y: 80,  ic: Package,      c: "#3b6ea5" },
-    { x: 150, y: 220, ic: ShoppingCart, c: "#6b5ca5" },
-    { x: 260, y: 150, ic: Users,        c: AMBER },
-    { x: 370, y: 80,  ic: Route,        c: ACCENT },
-    { x: 370, y: 220, ic: ShieldAlert,  c: "#c2452f" },
-    { x: 460, y: 150, ic: Leaf,         c: "#4c9a6a" },
+    { x: 58,  y: 158, ic: TrendingUp,   code: "SC-01" },
+    { x: 158, y: 84,  ic: Package,      code: "SC-02" },
+    { x: 158, y: 232, ic: ShoppingCart, code: "SC-03" },
+    { x: 262, y: 158, ic: Users,        code: "SC-04" },
+    { x: 366, y: 84,  ic: Route,        code: "SC-05" },
+    { x: 366, y: 232, ic: ShieldAlert,  code: "SC-09", brass: true },
+    { x: 464, y: 158, ic: Leaf,         code: "SC-15" },
   ];
   const edges = [[0,1],[0,2],[1,3],[2,3],[3,4],[3,5],[4,6],[5,6]];
+  const D = 21; // half-diagonal of the diamond
   return (
-    <svg viewBox="0 0 520 300" className="w-full h-full" style={{ maxHeight: 340 }}>
+    <svg viewBox="0 0 520 300" className="w-full h-full" style={{ maxHeight: 330 }}>
       {edges.map(([a, b], i) => (
         <g key={i}>
           <line x1={nodes[a].x} y1={nodes[a].y} x2={nodes[b].x} y2={nodes[b].y} className="lp-edge" />
           <line x1={nodes[a].x} y1={nodes[a].y} x2={nodes[b].x} y2={nodes[b].y} className="lp-flow"
-                style={{ animationDelay: (i * 0.13) + "s" }} />
+                style={{ animationDelay: (i * 0.18) + "s" }} />
         </g>
       ))}
       {nodes.map((n, i) => {
         const Ic = n.ic;
+        const c = n.brass ? BRASS : JADE;
         return (
-          <g key={i} className="lp-node" style={{ animationDelay: (i * 0.45) + "s" }}>
-            <circle cx={n.x} cy={n.y} r="20" fill="#0d1826" stroke={n.c} strokeWidth="1.6" />
-            <circle cx={n.x} cy={n.y} r="20" fill={n.c} fillOpacity="0.12" />
-            <foreignObject x={n.x - 10} y={n.y - 10} width="20" height="20">
+          <g key={i} className="lp-node" style={{ animationDelay: (i * 0.5) + "s" }}>
+            <rect x={n.x - D * 0.72} y={n.y - D * 0.72} width={D * 1.44} height={D * 1.44} rx="4"
+                  transform={`rotate(45 ${n.x} ${n.y})`}
+                  fill={PANEL} stroke={c} strokeWidth="1.3" />
+            <rect x={n.x - D * 0.72} y={n.y - D * 0.72} width={D * 1.44} height={D * 1.44} rx="4"
+                  transform={`rotate(45 ${n.x} ${n.y})`}
+                  fill={c} fillOpacity="0.08" />
+            <foreignObject x={n.x - 9} y={n.y - 9} width="18" height="18">
               <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%" }}>
-                <Ic size={13} color={n.c} />
+                <Ic size={12.5} color={c} />
               </div>
             </foreignObject>
+            <text x={n.x} y={n.y + 36} textAnchor="middle" fill={FAINT} fontSize="8"
+                  style={{ fontFamily: "'Spline Sans Mono', monospace", letterSpacing: "0.08em" }}>
+              {n.code}
+            </text>
           </g>
         );
       })}
@@ -147,6 +179,13 @@ const MODULES = [
   { code: "SC-14", ic: Boxes,        en: "Packing",             ru: "Упаковка",         az: "Qablaşdırma" },
   { code: "SC-15", ic: Leaf,         en: "Sustainability",      ru: "Устойчивость",     az: "Dayanıqlıq" },
 ];
+
+/* факты платформы — вынесены из hero-текста в тихую доказательную полосу */
+const PROOF = {
+  ru: [["15", "модулей в одном контуре"], ["03", "языка · RU EN AZ"], ["SC-01→15", "данные текут по конвейеру"], ["Claude", "три AI-функции внутри"]],
+  en: [["15", "modules, one loop"], ["03", "languages · RU EN AZ"], ["SC-01→15", "data flows down the pipeline"], ["Claude", "three AI features inside"]],
+  az: [["15", "modul vahid konturda"], ["03", "dil · RU EN AZ"], ["SC-01→15", "data konveyer üzrə axır"], ["Claude", "üç AI funksiyası daxildə"]],
+};
 
 export default function Landing() {
   useReveal();
@@ -183,6 +222,7 @@ export default function Landing() {
       deck_p: "Пятнадцать модулей, алгоритмы и интерфейс на трёх языках — в PDF-презентации.",
       deck_btn: "Скачать презентацию (PDF)",
       foot: "Supply chain intelligence · RU / EN / AZ",
+      live: "Живой контур",
     },
     en: {
       nav_demo: "Open platform",
@@ -215,6 +255,7 @@ export default function Landing() {
       deck_p: "Fifteen modules, the algorithms, and the trilingual interface — in a PDF deck.",
       deck_btn: "Download deck (PDF)",
       foot: "Supply chain intelligence · RU / EN / AZ",
+      live: "Live circuit",
     },
     az: {
       nav_demo: "Platformanı aç",
@@ -247,135 +288,179 @@ export default function Landing() {
       deck_p: "On beş modul, alqoritmlər və üç dilli interfeys — PDF təqdimatında.",
       deck_btn: "Təqdimatı yüklə (PDF)",
       foot: "Supply chain intelligence · RU / EN / AZ",
+      live: "Canlı kontur",
     },
   };
   const t = T[lang];
   const heroLines = t.hero_h.split("\n");
+  const FLOWS = [
+    { a: "SC-01", b: "SC-02", l: { ru: "спрос → запасы", en: "demand → inventory", az: "tələb → ehtiyat" } },
+    { a: "SC-02", b: "SC-03", l: { ru: "запасы → закупки", en: "inventory → procurement", az: "ehtiyat → satınalma" } },
+    { a: "SC-04", b: "SC-09", l: { ru: "поставщик → риск", en: "supplier → risk", az: "təchizatçı → risk" } },
+    { a: "SC-05", b: "SC-10", l: { ru: "маршрут → ETA", en: "route → ETA", az: "marşrut → ETA" } },
+    { a: "SC-05", b: "SC-15", l: { ru: "маршрут → CO₂", en: "route → CO₂", az: "marşrut → CO₂" } },
+  ];
+
+  const SectionHead = ({ eyebrow, h, p, center }) => (
+    <div className={"reveal mb-12 " + (center ? "text-center" : "")}>
+      <div className={"lp-rail mb-4 " + (center ? "justify-center" : "")}>
+        <span className="lp-diamond" />
+        <span className="lp-eyebrow" style={{ color: JADE }}>{eyebrow}</span>
+      </div>
+      <h2 className="lp-display font-bold mb-3"
+          style={{ fontSize: "clamp(1.7rem,3.4vw,2.5rem)", color: "#F3F8F4", lineHeight: 1.12 }}>{h}</h2>
+      {p && <p style={{ color: MUT, maxWidth: 560, margin: center ? "0 auto" : 0, lineHeight: 1.65 }}>{p}</p>}
+    </div>
+  );
 
   return (
     <div className="lp">
       <style>{CSS}</style>
 
       {/* ---------- nav ---------- */}
-      <header className="fixed top-0 inset-x-0 z-50" style={{ background: "rgba(10,20,32,0.72)", backdropFilter: "blur(10px)", borderBottom: "1px solid rgba(120,150,170,0.12)" }}>
+      <header className="fixed top-0 inset-x-0 z-50"
+              style={{ background: "rgba(10,16,14,0.78)", backdropFilter: "blur(12px)",
+                       borderBottom: "1px solid " + LINE }}>
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center gap-3">
-          <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: ACCENT }}>
-            <Boxes size={17} color="#fff" />
+          <div className="w-[30px] h-[30px] rounded-lg flex items-center justify-center"
+               style={{ background: "linear-gradient(135deg,#12896D,#0B6450)",
+                        boxShadow: "0 0 0 1px rgba(46,194,155,0.3), 0 4px 14px rgba(18,136,108,0.35)" }}>
+            <span style={{ width: 9, height: 9, transform: "rotate(45deg)", background: "#fff", display: "block" }} />
           </div>
-          <div className="lp-display font-bold text-white">ChainSense</div>
-          <div className="lp-eyebrow ml-1 hidden sm:block" style={{ color: "#5f7285" }}>SUPPLY AI</div>
-          <div className="ml-auto flex items-center gap-2">
-            <div className="flex items-center gap-1 mr-1">
+          <div className="lp-display font-bold text-[16.5px]" style={{ color: "#F3F8F4" }}>ChainSense</div>
+          <div className="lp-eyebrow ml-1 hidden sm:block" style={{ color: FAINT, fontSize: 9.5 }}>SUPPLY INTELLIGENCE</div>
+          <div className="ml-auto flex items-center gap-2.5">
+            <div className="flex items-center rounded-lg p-[3px] gap-[2px] mr-1"
+                 style={{ background: "rgba(255,255,255,0.05)", border: "1px solid " + LINE }}>
               {["az", "ru", "en"].map((l) => (
                 <button key={l} onClick={() => setLang(l)}
-                  className="lp-btn rounded-lg px-2.5 py-1.5 text-xs font-bold uppercase"
-                  style={lang === l ? { background: "#fff", color: INK } : { background: "rgba(255,255,255,0.06)", color: "#9fb0c0" }}>
+                  className="lp-btn lp-num rounded-[6px] px-2 py-1 text-[10px] font-semibold uppercase"
+                  style={lang === l ? { background: "#F3F8F4", color: "#0F1613" }
+                                    : { background: "transparent", color: MUT }}>
                   {l}
                 </button>))}
             </div>
             <a href="/ChainSenseAI.pdf" download
-              className="lp-btn hidden sm:inline-flex items-center gap-1.5 rounded-xl px-3 py-2 text-sm font-semibold"
-              style={{ background: "rgba(255,255,255,0.06)", color: "#dfe6ee", border: "1px solid rgba(120,150,170,0.25)" }}
+              className="lp-btn lp-btn-ghost hidden sm:inline-flex items-center gap-1.5 rounded-[10px] px-3.5 py-2 text-[13px] font-semibold"
               title={t.nav_deck}>
-              <Download size={15} /> <span className="hidden md:inline">{t.nav_deck}</span>
+              <Download size={14} /> <span className="hidden md:inline">{t.nav_deck}</span>
             </a>
             <Link to="/app"
-              className="lp-btn inline-flex items-center gap-1.5 rounded-xl px-4 py-2 text-sm font-semibold"
-              style={{ background: ACCENT, color: "#fff", boxShadow: "0 6px 20px rgba(13,122,104,0.35)" }}>
-              {t.nav_demo} <ArrowRight size={15} />
+              className="lp-btn lp-btn-primary inline-flex items-center gap-1.5 rounded-[10px] px-4 py-2 text-[13px] font-semibold">
+              {t.nav_demo} <ArrowRight size={14} />
             </Link>
           </div>
         </div>
       </header>
 
       {/* ---------- hero ---------- */}
-      <section className="lp-hero-bg relative pt-32 pb-24 px-6">
-        <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
+      <section className="lp-hero-bg relative pt-36 pb-20 px-6">
+        <div className="lp-grid absolute inset-0 pointer-events-none" />
+        <div className="max-w-6xl mx-auto relative grid lg:grid-cols-[1.08fr_0.92fr] gap-14 items-center">
           <div>
-            <div className="lp-eyebrow mb-5 inline-flex items-center gap-2" style={{ color: ACCENT }}>
-              <span className="lp-blink inline-block w-1.5 h-1.5 rounded-full" style={{ background: ACCENT }} />
-              {t.hero_eyebrow}
+            <div className="lp-rail mb-6">
+              <span className="lp-diamond lp-blink" />
+              <span className="lp-eyebrow" style={{ color: JADE }}>{t.hero_eyebrow}</span>
             </div>
-            <h1 className="lp-display font-extrabold leading-[1.08] mb-6"
-                style={{ fontSize: "clamp(2rem, 4.6vw, 3.4rem)", color: "#f4f8fb" }}>
+            <h1 className="lp-display font-extrabold mb-6"
+                style={{ fontSize: "clamp(2.2rem, 4.9vw, 3.7rem)", color: "#F5FAF6", lineHeight: 1.06 }}>
               {heroLines.map((ln, i) => (
                 <span key={i} className="block reveal" style={{ transitionDelay: (i * 0.12) + "s" }}>{ln}</span>
               ))}
             </h1>
-            <p className="reveal text-base leading-relaxed mb-8" style={{ color: "#aebccb", maxWidth: 560, transitionDelay: ".24s" }}>
+            <p className="reveal text-[15.5px] mb-9" style={{ color: MUT, maxWidth: 540, lineHeight: 1.7, transitionDelay: ".24s" }}>
               {t.hero_p}
             </p>
             <div className="reveal flex flex-wrap gap-3" style={{ transitionDelay: ".34s" }}>
               <Link to="/app"
-                className="lp-btn inline-flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-semibold"
-                style={{ background: ACCENT, color: "#fff", boxShadow: "0 10px 30px rgba(13,122,104,0.4)" }}>
+                className="lp-btn lp-btn-primary inline-flex items-center gap-2 rounded-[11px] px-6 py-3 text-sm font-semibold">
                 {t.hero_cta} <ArrowRight size={16} />
               </Link>
               <a href="#promo"
-                className="lp-btn inline-flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-semibold"
-                style={{ background: "rgba(255,255,255,0.06)", color: "#dfe6ee", border: "1px solid rgba(120,150,170,0.25)" }}>
-                <Play size={15} /> {t.hero_watch}
+                className="lp-btn lp-btn-ghost inline-flex items-center gap-2 rounded-[11px] px-6 py-3 text-sm font-semibold">
+                <Play size={14} /> {t.hero_watch}
               </a>
             </div>
           </div>
 
-          {/* signature: живой граф цепочки */}
-          <div className="reveal relative" style={{ transitionDelay: ".2s" }}>
-            <div className="rounded-3xl p-6" style={{ background: "rgba(13,24,38,0.6)", border: "1px solid rgba(120,150,170,0.18)", backdropFilter: "blur(6px)" }}>
+          {/* signature: live circuit of the chain */}
+          <div className="reveal lp-frame" style={{ transitionDelay: ".2s" }}>
+            <div className="rounded-2xl p-6 pt-5"
+                 style={{ background: "rgba(13,21,18,0.72)", border: "1px solid " + LINE,
+                          backdropFilter: "blur(6px)", boxShadow: "0 32px 80px -24px rgba(0,0,0,0.6)" }}>
+              <div className="flex items-center gap-2 mb-3">
+                <span className="lp-diamond lp-blink" style={{ width: 5, height: 5 }} />
+                <span className="lp-eyebrow" style={{ color: FAINT, fontSize: 9 }}>
+                  {t.live} · SC-01 → SC-15
+                </span>
+              </div>
               <SupplyGraph />
             </div>
-            {/* плавающие подписи-модули поверх */}
-            <div className="lp-chip absolute -top-3 -left-3 rounded-xl px-3 py-1.5 text-xs font-semibold lp-num"
-                 style={{ background: INK, color: ACCENT, border: "1px solid " + ACCENT + "55", animationDelay: "0s" }}>
-              SC-01 · forecast
-            </div>
-            <div className="lp-chip absolute -bottom-3 right-6 rounded-xl px-3 py-1.5 text-xs font-semibold lp-num"
-                 style={{ background: INK, color: AMBER, border: "1px solid " + AMBER + "55", animationDelay: "1.6s" }}>
-              SC-09 · risk
-            </div>
+            <span className="lp-tick tl" /><span className="lp-tick tr" />
+            <span className="lp-tick bl" /><span className="lp-tick br" />
+          </div>
+        </div>
+
+        {/* proof strip */}
+        <div className="max-w-6xl mx-auto relative mt-16 reveal">
+          <div className="grid grid-cols-2 md:grid-cols-4 rounded-xl overflow-hidden"
+               style={{ border: "1px solid " + LINE, background: "rgba(13,21,18,0.5)" }}>
+            {PROOF[lang].map(([v, l], i) => (
+              <div key={i}
+                   className={"px-5 py-4 " + (i % 2 === 1 ? "border-l " : "") + (i >= 2 ? "border-t md:border-t-0 " : "") + (i > 0 ? "md:border-l" : "")}
+                   style={{ borderColor: LINE.replace("0.14", "0.12") }}>
+                <div className="lp-num text-[19px] font-semibold" style={{ color: "#EAF2EC" }}>{v}</div>
+                <div className="text-[12px] mt-1" style={{ color: FAINT }}>{l}</div>
+              </div>))}
           </div>
         </div>
       </section>
 
       {/* ---------- problem / solution ---------- */}
-      <section className="px-6 py-20" style={{ background: "#081019" }}>
-        <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-6">
-          <div className="reveal rounded-3xl p-8" style={{ background: "rgba(194,69,47,0.06)", border: "1px solid rgba(194,69,47,0.22)" }}>
-            <div className="lp-eyebrow mb-3" style={{ color: "#e08a78" }}>{t.prob_eyebrow}</div>
-            <h2 className="lp-display font-bold text-2xl mb-4" style={{ color: "#f4f8fb" }}>{t.prob_h}</h2>
-            <p className="leading-relaxed" style={{ color: "#a9b8c7" }}>{t.prob_p}</p>
+      <section className="px-6 py-24" style={{ background: "#080D0B" }}>
+        <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-5">
+          <div className="reveal rounded-2xl p-9"
+               style={{ background: PANEL, border: "1px solid " + LINE }}>
+            <div className="lp-rail mb-4">
+              <span className="lp-diamond" style={{ background: BRASS }} />
+              <span className="lp-eyebrow" style={{ color: BRASS }}>{t.prob_eyebrow}</span>
+            </div>
+            <h2 className="lp-display font-bold text-[22px] mb-4" style={{ color: "#F3F8F4", lineHeight: 1.25 }}>{t.prob_h}</h2>
+            <p className="text-[14.5px]" style={{ color: MUT, lineHeight: 1.7 }}>{t.prob_p}</p>
           </div>
-          <div className="reveal rounded-3xl p-8" style={{ background: "rgba(13,122,104,0.07)", border: "1px solid rgba(13,122,104,0.3)", transitionDelay: ".12s" }}>
-            <div className="lp-eyebrow mb-3" style={{ color: "#5cc4b0" }}>{t.sol_eyebrow}</div>
-            <h2 className="lp-display font-bold text-2xl mb-4" style={{ color: "#f4f8fb" }}>{t.sol_h}</h2>
-            <p className="leading-relaxed" style={{ color: "#a9b8c7" }}>{t.sol_p}</p>
+          <div className="reveal rounded-2xl p-9"
+               style={{ background: "linear-gradient(160deg, rgba(18,136,108,0.1), rgba(13,21,18,0.4))",
+                        border: "1px solid rgba(46,194,155,0.24)", transitionDelay: ".12s" }}>
+            <div className="lp-rail mb-4">
+              <span className="lp-diamond" />
+              <span className="lp-eyebrow" style={{ color: JADE }}>{t.sol_eyebrow}</span>
+            </div>
+            <h2 className="lp-display font-bold text-[22px] mb-4" style={{ color: "#F3F8F4", lineHeight: 1.25 }}>{t.sol_h}</h2>
+            <p className="text-[14.5px]" style={{ color: MUT, lineHeight: 1.7 }}>{t.sol_p}</p>
           </div>
         </div>
       </section>
 
       {/* ---------- modules grid ---------- */}
-      <section className="px-6 py-24">
+      <section className="px-6 py-28">
         <div className="max-w-6xl mx-auto">
-          <div className="reveal mb-12 text-center">
-            <div className="lp-eyebrow mb-3" style={{ color: ACCENT }}>{t.mod_eyebrow}</div>
-            <h2 className="lp-display font-bold mb-3" style={{ fontSize: "clamp(1.6rem,3.4vw,2.4rem)", color: "#f4f8fb" }}>{t.mod_h}</h2>
-            <p style={{ color: "#8ea0b1", maxWidth: 520, margin: "0 auto" }}>{t.mod_p}</p>
-          </div>
+          <SectionHead eyebrow={t.mod_eyebrow} h={t.mod_h} p={t.mod_p} />
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
             {MODULES.map((m, i) => {
               const Ic = m.ic;
               return (
-                <div key={m.code} className="reveal lp-card rounded-2xl p-4"
-                     style={{ background: "rgba(16,26,40,0.55)", border: "1px solid rgba(120,150,170,0.16)",
-                              transitionDelay: (i * 0.035) + "s" }}>
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="w-9 h-9 rounded-xl flex items-center justify-center"
-                         style={{ background: "rgba(13,122,104,0.14)" }}>
-                      <Ic size={16} color={ACCENT} />
-                    </div>
-                    <span className="lp-num text-xs font-bold" style={{ color: "#5f7285" }}>{m.code}</span>
+                <div key={m.code} className="reveal lp-card rounded-xl p-4"
+                     style={{ background: "rgba(13,21,18,0.6)", border: "1px solid " + LINE,
+                              transitionDelay: (i * 0.03) + "s" }}>
+                  <div className="flex items-center justify-between mb-5">
+                    <span className="lp-num text-[10px] font-semibold" style={{ color: FAINT, letterSpacing: "0.08em" }}>{m.code}</span>
+                    <span className="lp-card-node" style={{ width: 6, height: 6, transform: "rotate(45deg)",
+                          border: "1px solid #45524B", transition: "background .3s, border-color .3s" }} />
                   </div>
-                  <div className="lp-display font-semibold text-sm" style={{ color: "#e6edf4" }}>{m[lang]}</div>
+                  <Ic size={16} className="lp-card-ic" style={{ color: "#7C8B83", transition: "color .3s" }} />
+                  <div className="lp-display font-semibold text-[13.5px] mt-2.5" style={{ color: "#E9F0EA", letterSpacing: "-0.01em" }}>
+                    {m[lang]}
+                  </div>
                 </div>);
             })}
           </div>
@@ -383,117 +468,129 @@ export default function Landing() {
       </section>
 
       {/* ---------- promo video ---------- */}
-      <section id="promo" className="px-6 py-24" style={{ background: "#081019" }}>
+      <section id="promo" className="px-6 py-28" style={{ background: "#080D0B" }}>
         <div className="max-w-4xl mx-auto">
-          <div className="reveal mb-10 text-center">
-            <div className="lp-eyebrow mb-3" style={{ color: AMBER }}>{t.vid_eyebrow}</div>
-            <h2 className="lp-display font-bold mb-3" style={{ fontSize: "clamp(1.6rem,3.4vw,2.4rem)", color: "#f4f8fb" }}>{t.vid_h}</h2>
-            <p style={{ color: "#8ea0b1" }}>{t.vid_p}</p>
-          </div>
-          <div className="reveal rounded-3xl overflow-hidden" style={{ border: "1px solid rgba(120,150,170,0.2)", boxShadow: "0 30px 80px rgba(0,0,0,0.5)", transitionDelay: ".1s" }}>
-            <div style={{ position: "relative", paddingTop: "56.25%", background: "#0a1420" }}>
-              {YT_ID === "REPLACE_WITH_YOUTUBE_ID" ? (
-                <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column",
-                              alignItems: "center", justifyContent: "center", gap: 12, textAlign: "center", padding: 24 }}>
-                  <Play size={40} color={AMBER} />
-                  <div className="lp-display font-semibold" style={{ color: "#dfe6ee" }}>
-                    {{ ru: "Место для промо-ролика", en: "Promo video placeholder", az: "Promo video yeri" }[lang]}
+          <SectionHead center eyebrow={t.vid_eyebrow} h={t.vid_h} p={t.vid_p} />
+          <div className="reveal lp-frame" style={{ transitionDelay: ".1s" }}>
+            <div className="rounded-2xl overflow-hidden"
+                 style={{ border: "1px solid " + LINE, boxShadow: "0 40px 100px -20px rgba(0,0,0,0.65)" }}>
+              <div style={{ position: "relative", paddingTop: "56.25%", background: PANEL }}>
+                {YT_ID === "REPLACE_WITH_YOUTUBE_ID" ? (
+                  <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column",
+                                alignItems: "center", justifyContent: "center", gap: 12, textAlign: "center", padding: 24 }}>
+                    <Play size={38} color={JADE} />
+                    <div className="lp-display font-semibold" style={{ color: TXT }}>
+                      {{ ru: "Место для промо-ролика", en: "Promo video placeholder", az: "Promo video yeri" }[lang]}
+                    </div>
+                    <div className="text-sm" style={{ color: FAINT, maxWidth: 360 }}>
+                      {{ ru: "Вставь ID ролика в переменную YT_ID в начале файла Landing.jsx",
+                         en: "Set your video ID in the YT_ID variable at the top of Landing.jsx",
+                         az: "Video ID-ni Landing.jsx faylının əvvəlindəki YT_ID dəyişəninə daxil et" }[lang]}
+                    </div>
                   </div>
-                  <div className="text-sm" style={{ color: "#7c8ea0", maxWidth: 360 }}>
-                    {{ ru: "Вставь ID ролика в переменную YT_ID в начале файла Landing.jsx",
-                       en: "Set your video ID in the YT_ID variable at the top of Landing.jsx",
-                       az: "Video ID-ni Landing.jsx faylının əvvəlindəki YT_ID dəyişəninə daxil et" }[lang]}
-                  </div>
-                </div>
-              ) : (
-                <iframe
-                  style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: 0 }}
-                  src={"https://www.youtube-nocookie.com/embed/" + YT_ID}
-                  title="ChainSense promo"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
-              )}
+                ) : (
+                  <iframe
+                    style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: 0 }}
+                    src={"https://www.youtube-nocookie.com/embed/" + YT_ID}
+                    title="ChainSense promo"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                )}
+              </div>
             </div>
+            <span className="lp-tick tl" /><span className="lp-tick tr" />
+            <span className="lp-tick bl" /><span className="lp-tick br" />
           </div>
         </div>
       </section>
 
-      {/* ---------- connectivity ---------- */}
-      <section className="px-6 py-24">
-        <div className="max-w-5xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
+      {/* ---------- connectivity: meridian diagram ---------- */}
+      <section className="px-6 py-28">
+        <div className="max-w-5xl mx-auto grid lg:grid-cols-2 gap-14 items-center">
           <div className="reveal">
-            <div className="lp-eyebrow mb-3" style={{ color: ACCENT }}>{t.link_eyebrow}</div>
-            <h2 className="lp-display font-bold mb-5" style={{ fontSize: "clamp(1.6rem,3.4vw,2.4rem)", color: "#f4f8fb" }}>{t.link_h}</h2>
-            <p className="leading-relaxed" style={{ color: "#a9b8c7" }}>{t.link_p}</p>
+            <div className="lp-rail mb-4">
+              <span className="lp-diamond" />
+              <span className="lp-eyebrow" style={{ color: JADE }}>{t.link_eyebrow}</span>
+            </div>
+            <h2 className="lp-display font-bold mb-5"
+                style={{ fontSize: "clamp(1.7rem,3.4vw,2.5rem)", color: "#F3F8F4", lineHeight: 1.12 }}>{t.link_h}</h2>
+            <p className="text-[14.5px]" style={{ color: MUT, lineHeight: 1.7 }}>{t.link_p}</p>
           </div>
           <div className="reveal" style={{ transitionDelay: ".12s" }}>
-            <div className="rounded-3xl p-8 space-y-4" style={{ background: "rgba(13,24,38,0.55)", border: "1px solid rgba(120,150,170,0.18)" }}>
-              {[
-                { a: "SC-01", b: "SC-02", l: { ru: "спрос → запасы", en: "demand → inventory", az: "tələb → ehtiyat" } },
-                { a: "SC-02", b: "SC-03", l: { ru: "запасы → закупки", en: "inventory → procurement", az: "ehtiyat → satınalma" } },
-                { a: "SC-04", b: "SC-09", l: { ru: "поставщик → риск", en: "supplier → risk", az: "təchizatçı → risk" } },
-                { a: "SC-05", b: "SC-10", l: { ru: "маршрут → ETA", en: "route → ETA", az: "marşrut → ETA" } },
-                { a: "SC-05", b: "SC-15", l: { ru: "маршрут → CO₂", en: "route → CO₂", az: "marşrut → CO₂" } },
-              ].map((row, i) => (
-                <div key={i} className="flex items-center gap-3">
-                  <span className="lp-num text-xs font-bold rounded-lg px-2.5 py-1" style={{ background: "rgba(13,122,104,0.16)", color: "#5cc4b0" }}>{row.a}</span>
-                  <ArrowRight size={14} color="#5f7285" />
-                  <span className="lp-num text-xs font-bold rounded-lg px-2.5 py-1" style={{ background: "rgba(217,142,43,0.14)", color: "#e0a860" }}>{row.b}</span>
-                  <span className="text-sm ml-1" style={{ color: "#8ea0b1" }}>{row.l[lang]}</span>
-                </div>))}
+            <div className="relative rounded-2xl px-7 py-6"
+                 style={{ background: PANEL, border: "1px solid " + LINE }}>
+              {/* vertical rail */}
+              <div className="absolute top-7 bottom-7 pointer-events-none"
+                   style={{ left: 31, width: 1, background: "linear-gradient(rgba(46,194,155,0.45), rgba(46,194,155,0.06))" }} />
+              <div className="space-y-4">
+                {FLOWS.map((row, i) => (
+                  <div key={i} className="relative flex items-center gap-3">
+                    <span className="lp-diamond relative z-10" style={{ width: 8, height: 8, marginLeft: 1 }} />
+                    <span className="lp-num text-[11px] font-semibold rounded-md px-2 py-1"
+                          style={{ background: "rgba(46,194,155,0.1)", color: JADE, border: "1px solid rgba(46,194,155,0.28)" }}>{row.a}</span>
+                    <span className="flex-shrink-0" style={{ width: 26, height: 1,
+                          background: "repeating-linear-gradient(90deg, rgba(157,171,163,0.5) 0 4px, transparent 4px 8px)" }} />
+                    <span className="lp-num text-[11px] font-semibold rounded-md px-2 py-1"
+                          style={{ background: "rgba(255,255,255,0.04)", color: "#CBD8CF", border: "1px solid " + LINE }}>{row.b}</span>
+                    <span className="text-[12.5px] ml-1 truncate" style={{ color: FAINT }}>{row.l[lang]}</span>
+                  </div>))}
+              </div>
             </div>
           </div>
         </div>
       </section>
 
       {/* ---------- deck download ---------- */}
-      <section className="px-6 py-20" style={{ background: "#081019" }}>
+      <section className="px-6 py-20" style={{ background: "#080D0B" }}>
         <div className="max-w-3xl mx-auto reveal">
-          <div className="rounded-3xl p-8 md:p-10 flex flex-col md:flex-row md:items-center gap-6"
-               style={{ background: "linear-gradient(135deg, rgba(13,122,104,0.12), rgba(217,142,43,0.08))",
-                        border: "1px solid rgba(13,122,104,0.3)" }}>
-            <div className="w-16 h-16 rounded-2xl flex items-center justify-center flex-shrink-0"
-                 style={{ background: "rgba(13,122,104,0.18)", border: "1px solid " + ACCENT + "55" }}>
-              <FileText size={28} color={ACCENT} />
+          <div className="rounded-2xl p-8 md:p-9 flex flex-col md:flex-row md:items-center gap-6"
+               style={{ background: PANEL, border: "1px solid " + LINE }}>
+            <div className="w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0"
+                 style={{ background: "rgba(46,194,155,0.08)", border: "1px solid rgba(46,194,155,0.3)" }}>
+              <FileText size={24} color={JADE} />
             </div>
             <div className="flex-1">
-              <div className="lp-eyebrow mb-2" style={{ color: ACCENT }}>{t.deck_eyebrow}</div>
-              <h2 className="lp-display font-bold text-xl mb-1.5" style={{ color: "#f4f8fb" }}>{t.deck_h}</h2>
-              <p className="text-sm" style={{ color: "#a9b8c7" }}>{t.deck_p}</p>
+              <div className="lp-eyebrow mb-2" style={{ color: JADE }}>{t.deck_eyebrow}</div>
+              <h2 className="lp-display font-bold text-[19px] mb-1.5" style={{ color: "#F3F8F4" }}>{t.deck_h}</h2>
+              <p className="text-[13.5px]" style={{ color: MUT }}>{t.deck_p}</p>
             </div>
             <a href="/ChainSenseAI.pdf" download
-              className="lp-btn inline-flex items-center justify-center gap-2 rounded-xl px-6 py-3 text-sm font-semibold flex-shrink-0"
-              style={{ background: ACCENT, color: "#fff", boxShadow: "0 10px 30px rgba(13,122,104,0.4)" }}>
-              <Download size={16} /> {t.deck_btn}
+              className="lp-btn lp-btn-primary inline-flex items-center justify-center gap-2 rounded-[11px] px-6 py-3 text-sm font-semibold flex-shrink-0">
+              <Download size={15} /> {t.deck_btn}
             </a>
           </div>
         </div>
       </section>
 
       {/* ---------- final CTA ---------- */}
-      <section className="px-6 py-28 lp-hero-bg">
+      <section className="px-6 py-32 relative"
+               style={{ background: "radial-gradient(700px 380px at 50% 110%, rgba(18,136,108,0.16), transparent 70%), " + INK }}>
         <div className="max-w-3xl mx-auto text-center reveal">
-          <h2 className="lp-display font-extrabold mb-4" style={{ fontSize: "clamp(1.8rem,4vw,3rem)", color: "#f4f8fb" }}>{t.cta_h}</h2>
-          <p className="mb-8 text-lg" style={{ color: "#aebccb" }}>{t.cta_p}</p>
+          <div className="lp-rail justify-center mb-6" style={{ gap: 12 }}>
+            <span className="lp-diamond lp-blink" />
+          </div>
+          <h2 className="lp-display font-extrabold mb-4"
+              style={{ fontSize: "clamp(1.9rem,4.2vw,3.1rem)", color: "#F5FAF6", lineHeight: 1.08 }}>{t.cta_h}</h2>
+          <p className="mb-9 text-[16px]" style={{ color: MUT }}>{t.cta_p}</p>
           <Link to="/app"
-            className="lp-btn inline-flex items-center gap-2 rounded-2xl px-8 py-4 text-base font-semibold"
-            style={{ background: ACCENT, color: "#fff", boxShadow: "0 14px 40px rgba(13,122,104,0.45)" }}>
-            {t.cta_btn} <ArrowRight size={18} />
+            className="lp-btn lp-btn-primary inline-flex items-center gap-2 rounded-xl px-8 py-4 text-[15px] font-semibold">
+            {t.cta_btn} <ArrowRight size={17} />
           </Link>
         </div>
       </section>
 
       {/* ---------- footer ---------- */}
-      <footer className="px-6 py-10" style={{ background: "#070e16", borderTop: "1px solid rgba(120,150,170,0.12)" }}>
+      <footer className="px-6 py-10" style={{ background: "#070C0A", borderTop: "1px solid " + LINE }}>
         <div className="max-w-6xl mx-auto flex flex-wrap items-center gap-3">
-          <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: ACCENT }}>
-            <Boxes size={14} color="#fff" />
+          <div className="w-6 h-6 rounded-md flex items-center justify-center"
+               style={{ background: "linear-gradient(135deg,#12896D,#0B6450)" }}>
+            <span style={{ width: 7, height: 7, transform: "rotate(45deg)", background: "#fff", display: "block" }} />
           </div>
-          <span className="lp-display font-bold text-white">ChainSense</span>
-          <span className="text-sm ml-2" style={{ color: "#5f7285" }}>{t.foot}</span>
-          <Link to="/app" className="ml-auto text-sm lp-btn inline-flex items-center gap-1.5" style={{ color: ACCENT }}>
-            <Globe size={14} /> {t.nav_demo}
+          <span className="lp-display font-bold text-[15px]" style={{ color: "#F3F8F4" }}>ChainSense</span>
+          <span className="lp-num text-[11px] ml-2" style={{ color: FAINT }}>{t.foot}</span>
+          <Link to="/app" className="ml-auto text-[13px] lp-btn inline-flex items-center gap-1.5 font-medium" style={{ color: JADE }}>
+            <Globe size={13} /> {t.nav_demo}
           </Link>
         </div>
       </footer>

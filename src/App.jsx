@@ -32,11 +32,30 @@ if (typeof window !== "undefined" && !window.storage) {
   };
 }
 
-const ACCENT = "#0d7a68";
-const AMBER = "#d98e2b";
-const RED = "#c2452f";
-const INK = "#101826";
-const BG = "#eef1f4";
+/* ---- Meridian tokens: one jade accent, one brass counterpoint, signal red,
+       slate for neutral data series, pine-cast neutrals everywhere else ---- */
+const ACCENT = "#0E7C63";           // jade — the single brand accent
+const AMBER = "#B9893B";            // brass — attention, sparing
+const RED = "#BE4B32";              // signal — risk semantics only
+const SLATE = "#5E7488";            // neutral data series
+const INK = "#141B17";              // text ink / dark surfaces
+const BG = "#F3F5F0";               // paper workspace
+const LINE = "#E4E7E0";             // hairline
+const MUT = "#5B6660";              // muted text
+const FAINT = "#8B948E";            // faint text / axis
+
+/* shared chart voice */
+const TIP = {
+  cursor: { stroke: "#C9CFC5", strokeDasharray: "3 3" },
+  contentStyle: {
+    background: "#10201B", border: "1px solid rgba(255,255,255,0.08)",
+    borderRadius: 10, boxShadow: "0 12px 32px rgba(10,20,16,0.35)",
+    padding: "8px 12px",
+  },
+  labelStyle: { color: "#9DABA3", fontSize: 10, fontFamily: "'Spline Sans Mono', monospace",
+    letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: 4 },
+  itemStyle: { fontSize: 12, color: "#E9EFEA", padding: 0 },
+};
 
 const MONTHS = {
   ru: ["янв","фев","мар","апр","май","июн","июл","авг","сен","окт","ноя","дек"],
@@ -55,9 +74,9 @@ const mulberry32 = (a) => () => {
 let FMT_LOCALE = "ru-RU";
 const fmt = (n, d = 0) =>
   Number(n).toLocaleString(FMT_LOCALE, { maximumFractionDigits: d, minimumFractionDigits: d });
-const DK = { "#0d7a68": "#0a5d50", "#d98e2b": "#8a5a10", "#c2452f": "#992f22",
-  "#3b6ea5": "#2d5580", "#6b5ca5": "#514682", "#8896a6": "#5c6b7a",
-  "#b0578d": "#8a3f6d", "#4c9a6a": "#39774f", "#8a8f3c": "#6b7030" };
+const DK = { "#0E7C63": "#0B6450", "#B9893B": "#8F6524", "#BE4B32": "#96331F",
+  "#5E7488": "#44586B", "#44586B": "#33434F", "#8B948E": "#5B6660",
+  "#2F8F6B": "#206B4F", "#A08F5C": "#7A6B3E" };
 const dk = (c) => DK[c] || c;
 
 /* ------------------------------ i18n ------------------------------ */
@@ -791,10 +810,10 @@ function layoutBox(box) {
 }
 
 const ITEM_PAL = [
-  ["#7fd1c0", "#0d7a68", "#085346"], ["#9fc3e8", "#3b6ea5", "#274b73"],
-  ["#c9bfe8", "#6b5ca5", "#4a3f78"], ["#f0c894", "#d98e2b", "#96601a"],
-  ["#e8a99b", "#c2452f", "#8a2f1f"], ["#b9d6a8", "#4c9a6a", "#356d4a"],
-  ["#d8b7cf", "#b0578d", "#7d3c63"], ["#cdd1a0", "#8a8f3c", "#5f632a"],
+  ["#8FD6C0", "#0E7C63", "#0B5B49"], ["#AEC3D4", "#5E7488", "#465A6B"],
+  ["#93A6B6", "#44586B", "#333F4C"], ["#E5C58C", "#B9893B", "#8F6524"],
+  ["#E2A491", "#BE4B32", "#96331F"], ["#9CCAB2", "#2F8F6B", "#206B4F"],
+  ["#D3C9A2", "#A08F5C", "#7A6B3E"], ["#C3CBC0", "#7E8A82", "#5C6660"],
 ];
 const hashN = (str) => { let h = 0; for (const c of str) h = (h * 31 + c.charCodeAt(0)) & 1023; return h; };
 
@@ -929,10 +948,11 @@ const AGENT_SYS = 'You can also control the app UI. Module ids and writable para
 /* --------------------------- shared widgets --------------------------- */
 const LinkSwitch = ({ on, set, src, t }) => (
   <button onClick={() => set(!on)}
-    className="cs-btn inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-semibold"
-    style={on ? { background: ACCENT + "1a", color: dk(ACCENT), border: "1px solid " + ACCENT + "55" }
-              : { background: "#eef1f4", color: "#5c6b7a", border: "1px solid #d5dbe3" }}>
-    <Link2 size={12} /> {t("linkL")}{src ? " ← " + src : ""}
+    className="cs-btn inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-[11px] font-semibold"
+    style={on ? { background: ACCENT + "12", color: dk(ACCENT), border: "1px solid " + ACCENT + "45" }
+              : { background: "#fff", color: MUT, border: "1px solid #D8DCD3" }}>
+    <span className="cs-diamond" style={{ width: 5, height: 5, background: on ? ACCENT : "#C4CBC1" }} />
+    <Link2 size={11} /> {t("linkL")}{src ? " ← " + src : ""}
   </button>
 );
 const CsvBtn = ({ t, hint, onRows }) => {
@@ -952,7 +972,7 @@ const CsvBtn = ({ t, hint, onRows }) => {
           e.target.value = "";
         }} />
       <Btn tone="ghost" icon={Upload} onClick={() => ref.current?.click()}>{t("importL")} CSV</Btn>
-      <span className="text-xs" style={{ color: msg === t("badCsv") ? dk(RED) : "#98a2b0" }}>{msg || hint}</span>
+      <span className="text-xs" style={{ color: msg === t("badCsv") ? dk(RED) : "#98A19A" }}>{msg || hint}</span>
     </div>
   );
 };
@@ -970,9 +990,9 @@ class CsBoundary extends React.Component {
   render() {
     if (!this.state.err) return this.props.children;
     return (
-      <div className="cs-card bg-white rounded-2xl p-6 text-center" style={{ border: "1px solid #dde3ea" }}>
+      <div className="cs-card bg-white rounded-xl p-6 text-center" style={{ border: "1px solid #E4E7E0" }}>
         <div className="cs-display font-bold mb-1" style={{ color: dk(RED) }}>{this.props.title}</div>
-        <div className="text-xs mb-3" style={{ color: "#7c8797" }}>{this.state.err.slice(0, 160)}</div>
+        <div className="text-xs mb-3" style={{ color: "#79837D" }}>{this.state.err.slice(0, 160)}</div>
         <Btn tone="ghost" icon={RefreshCw} onClick={() => this.setState({ err: null })}>{this.props.retry}</Btn>
       </div>
     );
@@ -981,21 +1001,30 @@ class CsBoundary extends React.Component {
 
 /* ------------------------------ UI atoms ------------------------------ */
 const CSS = `
-@import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700&family=Inter:wght@400;500;600&display=swap');
-.cs-root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,sans-serif;color:${INK};}
-.cs-display{font-family:Sora,Inter,ui-sans-serif,sans-serif;letter-spacing:-0.02em;}
-.cs-num{font-family:Sora,Inter,sans-serif;font-variant-numeric:tabular-nums;letter-spacing:-0.01em;}
-.cs-eyebrow{font-size:10px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:#7c8797;}
+.cs-root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,sans-serif;color:${INK};font-size:14px;}
+.cs-display{font-family:'Schibsted Grotesk',Inter,ui-sans-serif,sans-serif;letter-spacing:-0.022em;}
+.cs-num{font-family:'Spline Sans Mono',ui-monospace,SFMono-Regular,monospace;font-variant-numeric:tabular-nums;letter-spacing:-0.02em;}
+.cs-eyebrow{font-family:'Spline Sans Mono',ui-monospace,monospace;font-size:10px;font-weight:600;letter-spacing:0.13em;text-transform:uppercase;color:${FAINT};}
 .cs-root ::-webkit-scrollbar{width:8px;height:8px}
-.cs-root ::-webkit-scrollbar-thumb{background:#c7ced8;border-radius:8px}
-.cs-in{width:100%;border:1px solid #d5dbe3;border-radius:10px;padding:7px 10px;font-size:13px;background:#fff;outline:none}
-.cs-in:focus{border-color:${ACCENT};box-shadow:0 0 0 3px rgba(13,122,104,.15)}
+.cs-root ::-webkit-scrollbar-thumb{background:#CBD1C8;border-radius:8px}
+.cs-root ::-webkit-scrollbar-thumb:hover{background:#B6BDB3}
+.cs-in{width:100%;border:1px solid #D8DCD3;border-radius:9px;padding:7px 10px;font-size:13px;background:#fff;outline:none;color:${INK};transition:border-color .15s ease,box-shadow .15s ease}
+.cs-in:hover{border-color:#C4CBC1}
+.cs-in:focus{border-color:${ACCENT};box-shadow:0 0 0 3px rgba(14,124,99,.13)}
+.cs-root button:focus-visible,.cs-root a:focus-visible,.cs-root input:focus-visible,.cs-root select:focus-visible{outline:2px solid ${ACCENT};outline-offset:2px}
+.cs-root input[type=range]{-webkit-appearance:none;appearance:none;height:22px;background:transparent;cursor:pointer}
+.cs-root input[type=range]::-webkit-slider-runnable-track{height:3px;border-radius:2px;background:linear-gradient(${ACCENT},${ACCENT}) 0/var(--p,50%) 100% no-repeat,#E1E5DD}
+.cs-root input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;margin-top:-5.5px;border-radius:50%;background:#fff;border:2px solid ${ACCENT};box-shadow:0 1px 3px rgba(15,23,19,.2);transition:transform .12s ease}
+.cs-root input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.15)}
+.cs-root input[type=range]::-moz-range-track{height:3px;border-radius:2px;background:#E1E5DD}
+.cs-root input[type=range]::-moz-range-progress{height:3px;border-radius:2px;background:${ACCENT}}
+.cs-root input[type=range]::-moz-range-thumb{width:12px;height:12px;border-radius:50%;background:#fff;border:2px solid ${ACCENT}}
 @keyframes csUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 @keyframes csPop{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:scale(1)}}
 @keyframes csFade{from{opacity:0}to{opacity:1}}
 @keyframes csDraw{to{stroke-dashoffset:0}}
 @keyframes csBlink{0%,80%,100%{opacity:.25;transform:translateY(0)}40%{opacity:1;transform:translateY(-2px)}}
-@keyframes csPulse{0%{box-shadow:0 0 0 0 rgba(194,69,47,.4)}70%{box-shadow:0 0 0 7px rgba(194,69,47,0)}100%{box-shadow:0 0 0 0 rgba(194,69,47,0)}}
+@keyframes csPulse{0%{box-shadow:0 0 0 0 rgba(190,75,50,.4)}70%{box-shadow:0 0 0 7px rgba(190,75,50,0)}100%{box-shadow:0 0 0 0 rgba(190,75,50,0)}}
 .cs-up{animation:csUp .45s cubic-bezier(.2,.7,.2,1) both}
 .cs-pop{animation:csPop .35s cubic-bezier(.2,.75,.3,1.25) both}
 .cs-fade{animation:csFade .5s ease both}
@@ -1003,56 +1032,74 @@ const CSS = `
 .cs-dot{animation:csBlink 1.1s ease-in-out infinite}
 .cs-pulse{animation:csPulse 1.8s ease-out infinite}
 .cs-bar{transition:width .7s cubic-bezier(.2,.7,.2,1)}
-.cs-btn{transition:transform .15s ease,box-shadow .15s ease,opacity .15s ease,background .2s ease,color .2s ease}
-.cs-btn:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 4px 12px rgba(16,24,38,.14)}
-.cs-btn:active:not(:disabled){transform:translateY(0) scale(.97)}
-.cs-card{transition:box-shadow .25s ease}
-.cs-card:hover{box-shadow:0 6px 18px rgba(16,24,38,.08)}
+.cs-btn{transition:transform .15s ease,box-shadow .15s ease,opacity .15s ease,background .2s ease,color .2s ease,border-color .2s ease}
+.cs-btn:hover:not(:disabled){transform:translateY(-1px)}
+.cs-btn:active:not(:disabled){transform:translateY(0) scale(.98)}
+.cs-btn-primary{box-shadow:0 1px 2px rgba(11,100,80,.25),inset 0 1px 0 rgba(255,255,255,.12)}
+.cs-btn-primary:hover:not(:disabled){box-shadow:0 6px 16px rgba(14,124,99,.28),inset 0 1px 0 rgba(255,255,255,.12);background:#0D7159!important}
+.cs-btn-ghost:hover:not(:disabled){box-shadow:0 3px 10px rgba(15,23,19,.08);border-color:#C4CBC1!important}
+.cs-card{transition:box-shadow .25s ease,border-color .25s ease}
+.cs-card:hover{box-shadow:0 10px 26px -8px rgba(15,23,19,.1)}
 .cs-nav{transition:background .18s ease,color .18s ease,border-color .18s ease}
+.cs-nav:hover{background:rgba(255,255,255,.05)}
+.cs-diamond{width:7px;height:7px;transform:rotate(45deg);flex-shrink:0}
+.cs-root table tbody tr{transition:background .15s ease}
+.cs-root table tbody tr:hover{background:#F8F9F5}
 @media (prefers-reduced-motion: reduce){.cs-root *{transition:none!important;animation:none!important}}
 `;
 
-const Card = ({ title, extra, children, className = "" }) => (
-  <div className={"cs-card bg-white rounded-2xl p-5 " + className}
-       style={{ border: "1px solid #dde3ea", boxShadow: "0 1px 2px rgba(16,24,38,.04)" }}>
+const Card = ({ title, extra, children, className = "", tone }) => (
+  <div className={"cs-card rounded-xl p-5 " + className}
+       style={tone === "sunken"
+         ? { background: "#F7F8F4", border: "1px solid #E9ECE4" }
+         : { background: "#fff", border: "1px solid " + LINE, boxShadow: "0 1px 2px rgba(15,23,19,.03)" }}>
     {(title || extra) && (
       <div className="flex items-center justify-between mb-4 gap-3">
-        {title && <div className="cs-eyebrow">{title}</div>}
+        {title && (
+          <div className="cs-eyebrow flex items-center gap-2">
+            <span className="cs-diamond" style={{ background: "#CBD1C8", width: 5, height: 5 }} />
+            {title}
+          </div>)}
         {extra}
       </div>
     )}
     {children}
   </div>
 );
+const KPI_TONE = { "#0E7C63": "#0E7C63", "#B9893B": "#B9893B", "#BE4B32": "#BE4B32",
+  "#5E7488": "#5E7488", "#44586B": "#5E7488", "#8B948E": "#B6BDB3" };
 const Kpi = ({ l, v, s, tone }) => (
-  <div className="bg-white rounded-2xl px-4 py-3"
-       style={{ border: "1px solid #dde3ea", borderTop: `3px solid ${tone || ACCENT}` }}>
-    <div className="text-xs mb-1" style={{ color: "#7c8797" }}>{l}</div>
-    <div className="cs-num text-2xl font-bold" style={{ color: INK }}>{v}</div>
-    {s && <div className="text-xs mt-0.5" style={{ color: "#98a2b0" }}>{s}</div>}
+  <div className="cs-card bg-white rounded-xl px-4 pt-3.5 pb-3"
+       style={{ border: "1px solid " + LINE, boxShadow: "0 1px 2px rgba(15,23,19,.03)" }}>
+    <div className="flex items-center gap-1.5 mb-2">
+      {tone && <span className="cs-diamond" style={{ background: KPI_TONE[tone] || tone, width: 6, height: 6 }} />}
+      <span className="cs-eyebrow" style={{ color: "#79837D" }}>{l}</span>
+    </div>
+    <div className="cs-num text-[22px] leading-none font-semibold" style={{ color: INK }}>{v}</div>
+    {s && <div className="text-[11px] mt-1.5" style={{ color: FAINT }}>{s}</div>}
   </div>
 );
 const Num = ({ l, v, set, step = 1, min = 0, max = 1e9 }) => (
   <label className="block min-w-0">
-    <span className="text-xs font-medium" style={{ color: "#5c6b7a" }}>{l}</span>
+    <span className="text-xs font-medium" style={{ color: "#5B6660" }}>{l}</span>
     <input type="number" className="cs-in mt-1" value={v} step={step} min={min} max={max}
            onChange={(e) => set(parseFloat(e.target.value) || 0)} />
   </label>
 );
 const Slider = ({ l, v, set, min, max, step = 1, show }) => (
   <label className="block">
-    <div className="flex justify-between text-xs mb-1">
-      <span className="font-medium" style={{ color: "#5c6b7a" }}>{l}</span>
-      <span className="cs-num font-semibold" style={{ color: ACCENT }}>{show ?? v}</span>
+    <div className="flex justify-between items-baseline text-xs mb-0.5">
+      <span className="font-medium" style={{ color: MUT }}>{l}</span>
+      <span className="cs-num font-semibold text-[12px]" style={{ color: dk(ACCENT) }}>{show ?? v}</span>
     </div>
     <input type="range" min={min} max={max} step={step} value={v}
            onChange={(e) => set(parseFloat(e.target.value))}
-           className="w-full" style={{ accentColor: ACCENT }} />
+           className="w-full" style={{ accentColor: ACCENT, "--p": (100 * (v - min)) / (max - min) + "%" }} />
   </label>
 );
 const Sel = ({ l, v, set, opts }) => (
   <label className="block min-w-0">
-    {l && <span className="text-xs font-medium" style={{ color: "#5c6b7a" }}>{l}</span>}
+    {l && <span className="text-xs font-medium" style={{ color: "#5B6660" }}>{l}</span>}
     <select className="cs-in mt-1" value={v} onChange={(e) => set(e.target.value)}>
       {opts.map(([val, lab]) => <option key={val} value={val}>{lab}</option>)}
     </select>
@@ -1060,24 +1107,29 @@ const Sel = ({ l, v, set, opts }) => (
 );
 const Btn = ({ children, onClick, tone = "primary", disabled, icon: I }) => (
   <button onClick={onClick} disabled={disabled}
-    className="cs-btn inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold disabled:opacity-40"
+    className={"cs-btn inline-flex items-center gap-2 rounded-[10px] px-4 py-2 text-[13px] font-semibold disabled:opacity-40 " +
+      (tone === "primary" ? "cs-btn-primary" : "cs-btn-ghost")}
     style={tone === "primary"
-      ? { background: ACCENT, color: "#fff" }
-      : { background: "#eef1f4", color: INK, border: "1px solid #d5dbe3" }}>
-    {I && <I size={15} />}{children}
+      ? { background: ACCENT, color: "#fff", border: "1px solid " + dk(ACCENT) }
+      : { background: "#fff", color: INK, border: "1px solid #D8DCD3" }}>
+    {I && <I size={14} strokeWidth={2.2} />}{children}
   </button>
 );
 const Th = ({ children, right }) => (
-  <th className={"px-3 py-2 text-xs font-semibold " + (right ? "text-right" : "text-left")}
-      style={{ color: "#7c8797", borderBottom: "1px solid #e5eaf0" }}>{children}</th>
+  <th className={"px-3 py-2 " + (right ? "text-right" : "text-left")}
+      style={{ color: FAINT, borderBottom: "1px solid " + LINE, fontFamily: "'Spline Sans Mono', monospace",
+               fontSize: 10, fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase",
+               whiteSpace: "nowrap" }}>{children}</th>
 );
 const Td = ({ children, right, strong }) => (
-  <td className={"px-3 py-2 text-sm " + (right ? "text-right cs-num" : "") + (strong ? " font-semibold" : "")}
-      style={{ borderBottom: "1px solid #f0f3f7" }}>{children}</td>
+  <td className={"px-3 py-2 text-[13px] " + (right ? "text-right cs-num" : "") + (strong ? " font-semibold" : "")}
+      style={{ borderBottom: "1px solid #F0F2EC", color: strong ? INK : "#3A453F" }}>{children}</td>
 );
 const Pill = ({ children, color }) => (
-  <span className="text-xs font-semibold px-2 py-0.5 rounded-full"
-        style={{ background: color + "22", color: dk(color) }}>{children}</span>
+  <span className="text-[11px] font-semibold px-2 py-[3px] rounded-md inline-flex items-center gap-1"
+        style={{ background: color + "14", color: dk(color), border: "1px solid " + color + "2e" }}>
+    {children}
+  </span>
 );
 
 /* ============================ 1 · Demand ============================ */
@@ -1121,7 +1173,7 @@ function M1({ t, lang }) {
         <Kpi l={t("mape")} v={r.mape.toFixed(1) + "%"} />
         <Kpi l={t("growth")} v={(r.growth >= 0 ? "+" : "") + r.growth.toFixed(1) + "%"} />
         <Kpi l={t("peak")} v={r.peak} tone={AMBER} />
-        <Kpi l={t("forecastL")} v={h + " " + t("uMonth")} tone="#3b6ea5" />
+        <Kpi l={t("forecastL")} v={h + " " + t("uMonth")} tone="#5E7488" />
       </div>
       <div className="grid lg:grid-cols-4 gap-4">
         <Card title={t("params")}>
@@ -1130,7 +1182,7 @@ function M1({ t, lang }) {
             <Slider l={t("alphaL")} v={a} set={(v) => up("fc.a", v)} min={0.05} max={0.9} step={0.05} show={a.toFixed(2)} />
             <Slider l={t("betaL")} v={b} set={(v) => up("fc.b", v)} min={0.01} max={0.5} step={0.01} show={b.toFixed(2)} />
             <Slider l={t("gammaL")} v={g} set={(v) => up("fc.g", v)} min={0.05} max={0.9} step={0.05} show={g.toFixed(2)} />
-            <div className="pt-3" style={{ borderTop: "1px solid #eef1f4" }}>
+            <div className="pt-3" style={{ borderTop: "1px solid #EEF0EA" }}>
               <CsvBtn t={t} hint={t("csvHintSales")} onRows={onCsv} />
               <div className="mt-2">
                 <Btn tone="ghost" icon={RefreshCw} onClick={() => arr("sales", genSales())}>{t("sample")}</Btn>
@@ -1140,12 +1192,12 @@ function M1({ t, lang }) {
         </Card>
         <Card title={t("history") + " (" + r.n + ") + " + t("forecastL")} className="lg:col-span-3">
           <ResponsiveContainer width="100%" height={300}>
-            <ComposedChart data={r.rows} margin={{ left: -14, right: 6 }}>
-              <CartesianGrid stroke="#eef1f4" vertical={false} />
+            <ComposedChart data={r.rows} margin={{ left: -8, right: 6 }}>
+              <CartesianGrid stroke="#EEF0EA" vertical={false} />
               <XAxis dataKey="x" tick={{ fontSize: 10 }} interval={Math.max(2, Math.floor(r.rows.length / 9))} />
               <YAxis tick={{ fontSize: 10 }} />
-              <Tooltip />
-              <Line dataKey="hist" name={t("history")} stroke="#475569" dot={false} strokeWidth={1.8} />
+              <Tooltip {...TIP} />
+              <Line dataKey="hist" name={t("history")} stroke="#46524C" dot={false} strokeWidth={1.8} />
               <Line dataKey="fc" name={t("forecastL")} stroke={ACCENT} dot={false} strokeWidth={2.4} />
               <Line dataKey="hi" name={t("ciL")} stroke={ACCENT} strokeDasharray="4 4" dot={false} strokeWidth={1} legendType="none" />
               <Line dataKey="lo" name={t("ciL")} stroke={ACCENT} strokeDasharray="4 4" dot={false} strokeWidth={1} legendType="none" />
@@ -1158,17 +1210,17 @@ function M1({ t, lang }) {
         {r.bt ? (
           <div className="flex flex-wrap items-center gap-x-8 gap-y-2">
             <div>
-              <div className="text-xs" style={{ color: "#7c8797" }}>{t("btHw")}</div>
+              <div className="text-xs" style={{ color: "#79837D" }}>{t("btHw")}</div>
               <div className="cs-num text-xl font-bold" style={{ color: dk(ACCENT) }}>{r.bt.hw.toFixed(1)}%</div>
             </div>
             <div>
-              <div className="text-xs" style={{ color: "#7c8797" }}>{t("btNv")}</div>
-              <div className="cs-num text-xl font-bold" style={{ color: "#5c6b7a" }}>{r.bt.nv.toFixed(1)}%</div>
+              <div className="text-xs" style={{ color: "#79837D" }}>{t("btNv")}</div>
+              <div className="cs-num text-xl font-bold" style={{ color: "#5B6660" }}>{r.bt.nv.toFixed(1)}%</div>
             </div>
             <Pill color={beats ? ACCENT : RED}>{beats ? t("beatsL") : t("loseL")}</Pill>
           </div>
         ) : (
-          <div className="text-sm" style={{ color: "#7c8797" }}>{t("btShort")}</div>
+          <div className="text-sm" style={{ color: "#79837D" }}>{t("btShort")}</div>
         )}
       </Card>
     </div>
@@ -1191,15 +1243,15 @@ function M2({ t }) {
     cum += sh;
     return { k, sh, c: cum <= 80 ? "A" : cum <= 95 ? "B" : "C" };
   });
-  const cCol = { A: ACCENT, B: AMBER, C: "#8896a6" };
+  const cCol = { A: ACCENT, B: AMBER, C: "#8B948E" };
   const okServ = r.achieved >= parseFloat(sl);
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
         <Kpi l={t("eoqL")} v={fmt(r.eoq) + " " + t("uUnits")} />
         <Kpi l={t("ropL")} v={fmt(r.rop) + " " + t("uUnits")} tone={AMBER} />
-        <Kpi l={t("ssL")} v={fmt(r.ss) + " " + t("uUnits")} tone="#3b6ea5" />
-        <Kpi l={t("opyL")} v={r.opy.toFixed(1)} tone="#6b5ca5" />
+        <Kpi l={t("ssL")} v={fmt(r.ss) + " " + t("uUnits")} tone="#5E7488" />
+        <Kpi l={t("opyL")} v={r.opy.toFixed(1)} tone="#44586B" />
         <Kpi l={t("servFact")} v={(r.achieved * 100).toFixed(1) + "%"} tone={okServ ? ACCENT : RED}
              s={"z: " + (sl * 100) + "%"} />
       </div>
@@ -1208,8 +1260,8 @@ function M2({ t }) {
               extra={<LinkSwitch t={t} src="SC-01" on={linked} set={(v) => up("links.m2", v)} />}>
           <div className="grid grid-cols-2 lg:grid-cols-1 gap-3">
             {linked ? (
-              <div className="rounded-xl px-3 py-2" style={{ background: "#f2f7f5", border: "1px solid " + ACCENT + "33" }}>
-                <div className="text-xs" style={{ color: "#7c8797" }}>{t("annualD")}</div>
+              <div className="rounded-xl px-3 py-2" style={{ background: "#EDF5EF", border: "1px solid " + ACCENT + "33" }}>
+                <div className="text-xs" style={{ color: "#79837D" }}>{t("annualD")}</div>
                 <div className="cs-num font-bold">{fmt(dv.fcD)}</div>
                 <div className="text-xs" style={{ color: dk(ACCENT) }}>{t("fcSrc")}</div>
               </div>
@@ -1226,11 +1278,11 @@ function M2({ t }) {
         </Card>
         <Card title={t("simL")} className="lg:col-span-2">
           <ResponsiveContainer width="100%" height={280}>
-            <ComposedChart data={r.rows} margin={{ left: -14, right: 6 }}>
-              <CartesianGrid stroke="#eef1f4" vertical={false} />
+            <ComposedChart data={r.rows} margin={{ left: -8, right: 6 }}>
+              <CartesianGrid stroke="#EEF0EA" vertical={false} />
               <XAxis dataKey="t" tick={{ fontSize: 10 }} />
               <YAxis tick={{ fontSize: 10 }} />
-              <Tooltip />
+              <Tooltip {...TIP} />
               <Line dataKey="stock" name={t("stockL")} stroke={ACCENT} dot={false} strokeWidth={2} />
               <Line dataKey="rop" name="ROP" stroke={RED} strokeDasharray="5 4" dot={false} strokeWidth={1.4} />
               <Legend wrapperStyle={{ fontSize: 11 }} />
@@ -1271,15 +1323,15 @@ function M3({ t, lang }) {
     qty: pp.qty, coverage_days: Math.round(pp.cover),
   })), "po-plan", "PO");
   const chip = (l, v) => (
-    <div className="rounded-xl px-3 py-2" style={{ background: "#f2f7f5", border: "1px solid " + ACCENT + "33" }}>
-      <div className="text-xs" style={{ color: "#7c8797" }}>{l}</div>
+    <div className="rounded-xl px-3 py-2" style={{ background: "#EDF5EF", border: "1px solid " + ACCENT + "33" }}>
+      <div className="text-xs" style={{ color: "#79837D" }}>{l}</div>
       <div className="cs-num font-bold">{v}</div>
     </div>);
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
         <Kpi l={t("planL")} v={pos.length + " PO"} />
-        <Kpi l={t("qty")} v={fmt(pos.reduce((s2, pp) => s2 + pp.qty, 0)) + " " + t("uUnits")} tone="#3b6ea5" />
+        <Kpi l={t("qty")} v={fmt(pos.reduce((s2, pp) => s2 + pp.qty, 0)) + " " + t("uUnits")} tone="#5E7488" />
         <Kpi l={t("coverageL")} v={pos.length ? Math.round(pos[0].cover) + " " + t("uDays") : "\u2014"} tone={AMBER} />
       </div>
       <div className="grid lg:grid-cols-3 gap-4">
@@ -1300,7 +1352,7 @@ function M3({ t, lang }) {
         <Card title={t("planL")} className="lg:col-span-2"
               extra={<Btn tone="ghost" icon={Download} onClick={exp} disabled={!pos.length}>{t("exportL")}</Btn>}>
           {pos.length === 0 ? (
-            <div className="text-sm py-8 text-center" style={{ color: "#7c8797" }}>{t("noPO")}</div>
+            <div className="text-sm py-8 text-center" style={{ color: "#79837D" }}>{t("noPO")}</div>
           ) : (
             <table className="w-full">
               <thead><tr>
@@ -1340,7 +1392,7 @@ function M4({ t }) {
     rows.slice(0, 3).forEach((x) => (o[x.n] = x[k]));
     return o;
   });
-  const rc = [ACCENT, "#3b6ea5", AMBER];
+  const rc = [ACCENT, "#5E7488", AMBER];
   const wk = [["price", t("wPrice")], ["quality", t("wQual")], ["delivery", t("wDeliv")],
               ["reliability", t("wRel")], ["risk", t("wRisk")]];
   const wl = Object.fromEntries(wk);
@@ -1369,7 +1421,7 @@ function M4({ t }) {
         <Card title="Top-3">
           <ResponsiveContainer width="100%" height={280}>
             <RadarChart data={radar} outerRadius="72%">
-              <PolarGrid stroke="#e5eaf0" />
+              <PolarGrid stroke="#E4E7E0" />
               <PolarAngleAxis dataKey="crit" tick={{ fontSize: 10 }} />
               <PolarRadiusAxis domain={[0, 10]} tick={false} axisLine={false} />
               {rows.slice(0, 3).map((x, i) => (
@@ -1388,13 +1440,13 @@ function M4({ t }) {
             </tr></thead>
             <tbody>{sens.map((x) => (
               <tr key={x.k}>
-                <Td strong>{wl[x.k]} <span className="cs-num" style={{ color: "#98a2b0" }}>({w[x.k]})</span></Td>
+                <Td strong>{wl[x.k]} <span className="cs-num" style={{ color: "#98A19A" }}>({w[x.k]})</span></Td>
                 <Td>{x.lo
                   ? <span>{t("flipDn")} <b className="cs-num">{x.lo.v}</b> → {x.lo.to}</span>
-                  : <span style={{ color: "#98a2b0" }}>{x.hi ? "\u2014" : t("stableL")}</span>}</Td>
+                  : <span style={{ color: "#98A19A" }}>{x.hi ? "\u2014" : t("stableL")}</span>}</Td>
                 <Td>{x.hi
                   ? <span>{t("flipUp")} <b className="cs-num">{x.hi.v}</b> → {x.hi.to}</span>
-                  : <span style={{ color: "#98a2b0" }}>{x.lo ? "\u2014" : ""}</span>}</Td>
+                  : <span style={{ color: "#98A19A" }}>{x.lo ? "\u2014" : ""}</span>}</Td>
               </tr>))}
             </tbody>
           </table>
@@ -1417,7 +1469,7 @@ function M5({ t }) {
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 items-end">
-        <Kpi l={t("beforeL")} v={fmt(l0) + " " + t("uKm")} tone="#8896a6" />
+        <Kpi l={t("beforeL")} v={fmt(l0) + " " + t("uKm")} tone="#8B948E" />
         <Kpi l={t("afterL")} v={fmt(l1) + " " + t("uKm")} />
         <Kpi l={t("savingL")} v={"\u2212" + (100 * (1 - l1 / l0)).toFixed(0) + "%"} tone={AMBER} />
         <div className="flex gap-2 justify-end pb-1">
@@ -1427,22 +1479,22 @@ function M5({ t }) {
       <div className="grid lg:grid-cols-4 gap-4">
         <Card title={t("params")}>
           <Slider l={t("nPoints")} v={n} set={(v) => up("route.n", v)} min={6} max={20} />
-          <div className="mt-4 space-y-2 text-xs" style={{ color: "#5c6b7a" }}>
+          <div className="mt-4 space-y-2 text-xs" style={{ color: "#5B6660" }}>
             <div className="flex items-center gap-2">
               <span className="inline-block w-3 h-3 rounded-sm" style={{ background: INK }} /> {t("depotL")}
             </div>
             <div className="flex items-center gap-2">
-              <span className="inline-block w-6 border-t-2 border-dashed" style={{ borderColor: "#a7b2c0" }} /> {t("beforeL")}
+              <span className="inline-block w-6 border-t-2 border-dashed" style={{ borderColor: "#AEB6AD" }} /> {t("beforeL")}
             </div>
             <div className="flex items-center gap-2">
               <span className="inline-block w-6 border-t-2" style={{ borderColor: ACCENT }} /> {t("afterL")}
             </div>
           </div>
-          <div className="mt-4 text-xs" style={{ color: "#98a2b0" }}>{"→ SC-10 · SC-15"}</div>
+          <div className="mt-4 text-xs" style={{ color: "#98A19A" }}>{"→ SC-10 · SC-15"}</div>
         </Card>
         <Card className="lg:col-span-3">
-          <svg viewBox="0 0 100 100" className="w-full" style={{ maxHeight: 420, background: "#f7f9fa", borderRadius: 12 }}>
-            <polyline key={"n" + seed + "-" + n} className="cs-fade" points={poly(naive)} fill="none" stroke="#a7b2c0" strokeWidth="0.5" strokeDasharray="2 1.6" />
+          <svg viewBox="0 0 100 100" className="w-full" style={{ maxHeight: 420, background: "#F6F7F3", borderRadius: 12 }}>
+            <polyline key={"n" + seed + "-" + n} className="cs-fade" points={poly(naive)} fill="none" stroke="#AEB6AD" strokeWidth="0.5" strokeDasharray="2 1.6" />
             <polyline key={"o" + seed + "-" + n} pathLength="1" className="cs-draw" points={poly(opt)} fill="none" stroke={ACCENT} strokeWidth="0.9" />
             {pts.map((pp, i) => i === 0 ? (
               <rect key={i} x={pp.x - 2} y={pp.y - 2} width="4" height="4" fill={INK} />
@@ -1481,21 +1533,21 @@ function M6({ t }) {
     };
     return { optCls, opt: route(optSlot), rand: route(rndSlot), picks };
   }, []);
-  const cCol = { A: ACCENT, B: AMBER, C: "#c3ccd6" };
+  const cCol = { A: ACCENT, B: AMBER, C: "#C9CFC5" };
   const X = (a) => 26 + a * 62, Y = (b) => 16 + (BAYS - 1 - b) * 25;
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
         <Kpi l={t("optPathL")} v={r.opt.len + " " + t("uUnits")} />
-        <Kpi l={t("randPathL")} v={r.rand.len + " " + t("uUnits")} tone="#8896a6" />
+        <Kpi l={t("randPathL")} v={r.rand.len + " " + t("uUnits")} tone="#8B948E" />
         <Kpi l={t("gainL")} v={"−" + (100 * (1 - r.opt.len / r.rand.len)).toFixed(0) + "%"} tone={AMBER} />
       </div>
       <div className="grid lg:grid-cols-4 gap-4">
         <Card title={t("pickL")}>
           <div className="flex flex-wrap gap-2 mb-4">
-            {r.picks.map((p) => <Pill key={p} color="#3b6ea5">SKU-{1000 + p}</Pill>)}
+            {r.picks.map((p) => <Pill key={p} color="#5E7488">SKU-{1000 + p}</Pill>)}
           </div>
-          <div className="space-y-2 text-xs" style={{ color: "#5c6b7a" }}>
+          <div className="space-y-2 text-xs" style={{ color: "#5B6660" }}>
             {[["A", t("clsA")], ["B", t("clsB")], ["C", t("clsC")]].map(([c, l]) => (
               <div key={c} className="flex items-center gap-2">
                 <span className="inline-block w-3 h-3 rounded-sm" style={{ background: cCol[c] }} />{l}
@@ -1503,7 +1555,7 @@ function M6({ t }) {
           </div>
         </Card>
         <Card title={t("layoutL")} className="lg:col-span-3">
-          <svg viewBox="0 0 400 280" className="w-full" style={{ background: "#f7f9fa", borderRadius: 12 }}>
+          <svg viewBox="0 0 400 280" className="w-full" style={{ background: "#F6F7F3", borderRadius: 12 }}>
             {Array.from({ length: AIS }, (_, a) =>
               Array.from({ length: BAYS }, (_, b) => (
                 <rect key={a + "-" + b} x={X(a)} y={Y(b)} width="34" height="20" rx="3"
@@ -1563,7 +1615,7 @@ function M7({ t }) {
             </tr></thead>
             <tbody>{rows.map((m, i) => (
               <tr key={m.n} onClick={() => setSel(i)} className="cursor-pointer"
-                  style={{ background: i === sel ? "#f2f7f5" : "transparent" }}>
+                  style={{ background: i === sel ? "#EDF5EF" : "transparent" }}>
                 <Td strong>
                   <span className="inline-flex items-center gap-2">
                     {m.act === "actNow" &&
@@ -1585,10 +1637,10 @@ function M7({ t }) {
       <Card title={t("trendL") + " — " + rows[sel].n} className="lg:col-span-2">
         <ResponsiveContainer width="100%" height={240}>
           <LineChart data={trend} margin={{ left: -20, right: 6 }}>
-            <CartesianGrid stroke="#eef1f4" vertical={false} />
+            <CartesianGrid stroke="#EEF0EA" vertical={false} />
             <XAxis dataKey="w" tick={{ fontSize: 10 }} />
             <YAxis tick={{ fontSize: 10 }} domain={[0, 10]} />
-            <Tooltip />
+            <Tooltip {...TIP} />
             <ReferenceLine y={7.1} stroke={RED} strokeDasharray="5 4"
                            label={{ value: "ISO 7.1", fontSize: 10, fill: RED, position: "insideTopRight" }} />
             <Line dataKey="v" name={t("vibL")} stroke={ACCENT} strokeWidth={2.2} dot={{ r: 2 }} />
@@ -1596,8 +1648,8 @@ function M7({ t }) {
         </ResponsiveContainer>
         <div className="grid grid-cols-3 gap-2 mt-3 text-center">
           {[["vibL", rows[sel].vib], ["tempL", rows[sel].temp], ["hoursL", fmt(rows[sel].hrs)]].map(([k, v]) => (
-            <div key={k} className="rounded-xl py-2" style={{ background: "#f4f6f8" }}>
-              <div className="text-xs" style={{ color: "#7c8797" }}>{t(k)}</div>
+            <div key={k} className="rounded-xl py-2" style={{ background: "#F4F6F1" }}>
+              <div className="text-xs" style={{ color: "#79837D" }}>{t(k)}</div>
               <div className="cs-num font-bold">{v}</div>
             </div>))}
         </div>
@@ -1657,16 +1709,16 @@ function M8({ t, lang }) {
     const det = x.score >= thr;
     if (x.def && det) return { bg: RED + "22", bd: RED, ic: "\u2715" };
     if (x.def && !det) return { bg: AMBER + "2a", bd: AMBER, ic: "?" };
-    if (!x.def && det) return { bg: "#6b5ca522", bd: "#6b5ca5", ic: "!" };
-    return { bg: "#ffffff", bd: "#e2e7ee", ic: "" };
+    if (!x.def && det) return { bg: "#44586B22", bd: "#44586B", ic: "!" };
+    return { bg: "#ffffff", bd: "#E0E4DC", ic: "" };
   };
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <Kpi l={t("failL")} v={((batch.filter((x) => x.def).length / 24) * 100).toFixed(0) + "%"} tone={AMBER} />
         <Kpi l={t("precL")} v={(stat.prec * 100).toFixed(0) + "%"} />
-        <Kpi l={t("recL")} v={(stat.rec * 100).toFixed(0) + "%"} tone="#3b6ea5" />
-        <Kpi l={t("thrL")} v={(thr * 100).toFixed(0) + "%"} tone="#6b5ca5" />
+        <Kpi l={t("recL")} v={(stat.rec * 100).toFixed(0) + "%"} tone="#5E7488" />
+        <Kpi l={t("thrL")} v={(thr * 100).toFixed(0) + "%"} tone="#44586B" />
       </div>
       <div className="grid lg:grid-cols-2 gap-4">
         <Card title={t("runBatch") + " \u00b7 24"}
@@ -1687,22 +1739,22 @@ function M8({ t, lang }) {
                 </div>);
             })}
           </div>
-          <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs" style={{ color: "#5c6b7a" }}>
+          <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs" style={{ color: "#5B6660" }}>
             <span><span className="inline-block w-2.5 h-2.5 rounded-sm mr-1" style={{ background: RED }} />TP</span>
             <span><span className="inline-block w-2.5 h-2.5 rounded-sm mr-1" style={{ background: AMBER }} />FN</span>
-            <span><span className="inline-block w-2.5 h-2.5 rounded-sm mr-1" style={{ background: "#6b5ca5" }} />FP</span>
+            <span><span className="inline-block w-2.5 h-2.5 rounded-sm mr-1" style={{ background: "#44586B" }} />FP</span>
           </div>
         </Card>
         <Card title={t("visionH")}>
-          <div className="text-sm mb-3" style={{ color: "#5c6b7a" }}>{t("viaClaude")}</div>
+          <div className="text-sm mb-3" style={{ color: "#5B6660" }}>{t("viaClaude")}</div>
           <input ref={fref} type="file" accept="image/*" className="hidden" onChange={onFile} />
           <Btn icon={Upload} onClick={() => fref.current?.click()} disabled={busy}>
             {busy ? "\u2026" : t("uploadL")}
           </Btn>
-          {img && <img src={img} alt="" className="mt-3 rounded-xl max-h-44 object-contain" style={{ border: "1px solid #e2e7ee" }} />}
+          {img && <img src={img} alt="" className="mt-3 rounded-xl max-h-44 object-contain" style={{ border: "1px solid #E0E4DC" }} />}
           {err && <div className="mt-3 text-xs" style={{ color: dk(RED) }}>{t("apiErr")}: {err.slice(0, 120)}</div>}
           {vres && (
-            <div className="cs-up mt-3 rounded-xl p-3" style={{ background: "#f7f9fa", border: "1px solid #e2e7ee" }}>
+            <div className="cs-up mt-3 rounded-xl p-3" style={{ background: "#F6F7F3", border: "1px solid #E0E4DC" }}>
               <Pill color={vres.verdict === "ok" ? ACCENT : RED}>
                 {vres.verdict === "ok" ? t("passL") : t("defL")}{" · "}{Math.round((vres.confidence || 0) * 100)}%
               </Pill>
@@ -1735,8 +1787,8 @@ function M9({ t }) {
         <Kpi l={t("indexL")} v={idx} tone={idx >= 60 ? RED : idx >= 35 ? AMBER : ACCENT} />
         <Kpi l={t("highL")} v={hi} tone={RED} />
         <Kpi l={t("medL")} v={md} tone={AMBER} />
-        <Kpi l={t("expLoss")} v={fmt(mc.mean) + " k$"} tone="#6b5ca5" />
-        <Kpi l={t("p90Loss")} v={fmt(mc.p90) + " k$"} tone="#3b6ea5" />
+        <Kpi l={t("expLoss")} v={fmt(mc.mean) + " k$"} tone="#44586B" />
+        <Kpi l={t("p90Loss")} v={fmt(mc.p90) + " k$"} tone="#5E7488" />
       </div>
       <div className="grid lg:grid-cols-5 gap-4">
         <Card title={t("regL")} className="lg:col-span-3"
@@ -1748,13 +1800,13 @@ function M9({ t }) {
             <tbody>{risks.map((r) => (
               <tr key={r.id}>
                 <Td strong>
-                  {t(r.k)} {r.auto && <Pill color="#3b6ea5">SC-04</Pill>}
+                  {t(r.k)} {r.auto && <Pill color="#5E7488">SC-04</Pill>}
                 </Td>
                 <Td right>
                   {r.auto ? <Pill color={ACCENT}>{r.p}</Pill> : (
                     <select value={r.p} onChange={(e) => updR(r.id, "p", e.target.value)}
                             className="cs-num rounded-lg px-2 py-1 text-sm"
-                            style={{ border: "1px solid #d5dbe3", background: "#fff" }}>
+                            style={{ border: "1px solid #D8DCD3", background: "#fff" }}>
                       {[1,2,3,4,5].map((v) => <option key={v} value={v}>{v}</option>)}
                     </select>)}
                 </Td>
@@ -1762,7 +1814,7 @@ function M9({ t }) {
                   {r.auto ? <Pill color={ACCENT}>{r.i}</Pill> : (
                     <select value={r.i} onChange={(e) => updR(r.id, "i", e.target.value)}
                             className="cs-num rounded-lg px-2 py-1 text-sm"
-                            style={{ border: "1px solid #d5dbe3", background: "#fff" }}>
+                            style={{ border: "1px solid #D8DCD3", background: "#fff" }}>
                       {[1,2,3,4,5].map((v) => <option key={v} value={v}>{v}</option>)}
                     </select>)}
                 </Td>
@@ -1775,10 +1827,10 @@ function M9({ t }) {
           <div className="grid grid-cols-6 gap-1 text-xs">
             <div />
             {[1,2,3,4,5].map((i) => (
-              <div key={i} className="text-center font-semibold py-1" style={{ color: "#7c8797" }}>{i}</div>))}
+              <div key={i} className="text-center font-semibold py-1" style={{ color: "#79837D" }}>{i}</div>))}
             {[5,4,3,2,1].map((pp) => (
               <React.Fragment key={pp}>
-                <div className="flex items-center justify-center font-semibold" style={{ color: "#7c8797" }}>{pp}</div>
+                <div className="flex items-center justify-center font-semibold" style={{ color: "#79837D" }}>{pp}</div>
                 {[1,2,3,4,5].map((ii) => {
                   const here = risks.filter((r) => r.p === pp && r.i === ii);
                   const col = cellCol(pp * ii);
@@ -1791,7 +1843,7 @@ function M9({ t }) {
                 })}
               </React.Fragment>))}
           </div>
-          <div className="mt-2 text-xs text-center" style={{ color: "#98a2b0" }}>
+          <div className="mt-2 text-xs text-center" style={{ color: "#98A19A" }}>
             {t("impactL")}{" → · "}{t("probL")}{" ↑"}
           </div>
         </Card>
@@ -1802,14 +1854,14 @@ function M9({ t }) {
             <Num l={t("unitCost")} v={st.mcUnit} set={(v) => up("mcUnit", v)} step={10} />
           </div>
           <div className="lg:col-span-3">
-            <div className="text-xs mb-1" style={{ color: "#7c8797" }}>{t("exceedT")}</div>
+            <div className="text-xs mb-1" style={{ color: "#79837D" }}>{t("exceedT")}</div>
             <ResponsiveContainer width="100%" height={190}>
-              <LineChart data={mc.curve} margin={{ left: -14, right: 6 }}>
-                <CartesianGrid stroke="#eef1f4" vertical={false} />
+              <LineChart data={mc.curve} margin={{ left: -8, right: 6 }}>
+                <CartesianGrid stroke="#EEF0EA" vertical={false} />
                 <XAxis dataKey="x" tick={{ fontSize: 10 }} />
                 <YAxis tick={{ fontSize: 10 }} unit="%" />
-                <Tooltip />
-                <Line dataKey="p" name={"P(loss ≥ x)"} stroke="#6b5ca5" dot={false} strokeWidth={2} />
+                <Tooltip {...TIP} />
+                <Line dataKey="p" name={"P(loss ≥ x)"} stroke="#44586B" dot={false} strokeWidth={2} />
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -1857,7 +1909,7 @@ function M10({ t, lang }) {
       <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
         <Kpi l={t("etaP50")} v={fD(dt(r.p50))} s={fT(dt(r.p50)) + " \u00b7 " + Math.round(r.p50) + " " + t("hoursL")} />
         <Kpi l={t("etaP90")} v={fD(dt(r.p90))} s={fT(dt(r.p90)) + " \u00b7 " + Math.round(r.p90) + " " + t("hoursL")} tone={AMBER} />
-        <Kpi l={t("transitL")} v={Math.round(r.total) + " " + t("hoursL")} tone="#3b6ea5" />
+        <Kpi l={t("transitL")} v={Math.round(r.total) + " " + t("hoursL")} tone="#5E7488" />
       </div>
       <div className="grid lg:grid-cols-3 gap-4">
         <Card title={t("params")}
@@ -1866,8 +1918,8 @@ function M10({ t, lang }) {
             <Sel l={t("modeL")} v={mode} set={(v) => up("eta.mode", v)}
                  opts={[["road", t("road")], ["rail", t("rail")], ["sea", t("sea")], ["air", t("air")]]} />
             {linked ? (
-              <div className="rounded-xl px-3 py-2" style={{ background: "#f2f7f5", border: "1px solid " + ACCENT + "33" }}>
-                <div className="text-xs" style={{ color: "#7c8797" }}>{t("distKm")}</div>
+              <div className="rounded-xl px-3 py-2" style={{ background: "#EDF5EF", border: "1px solid " + ACCENT + "33" }}>
+                <div className="text-xs" style={{ color: "#79837D" }}>{t("distKm")}</div>
                 <div className="cs-num font-bold">{fmt(dv.routeKm)} {t("uKm")}</div>
               </div>
             ) : (
@@ -1883,13 +1935,13 @@ function M10({ t, lang }) {
             {r.parts.map((x, i) => (
               <div key={x.k}>
                 <div className="flex justify-between text-sm mb-1">
-                  <span style={{ color: "#5c6b7a" }}>{x.k}</span>
+                  <span style={{ color: "#5B6660" }}>{x.k}</span>
                   <span className="cs-num font-semibold">{x.v.toFixed(1)} {t("hoursL")}</span>
                 </div>
-                <div className="h-2.5 rounded-full" style={{ background: "#eef1f4" }}>
+                <div className="h-2.5 rounded-full" style={{ background: "#EEF0EA" }}>
                   <div className="cs-bar h-2.5 rounded-full"
                        style={{ width: Math.max(2, (x.v / mx) * 100) + "%",
-                                background: ["#3b6ea5", ACCENT, AMBER, "#6b5ca5"][i],
+                                background: ["#5E7488", ACCENT, AMBER, "#44586B"][i],
                                 transitionDelay: i * 60 + "ms" }} />
                 </div>
               </div>))}
@@ -1933,14 +1985,14 @@ function M11({ t, lang }) {
               className="cs-btn rounded-lg px-3 py-1.5 text-sm font-semibold"
               style={tab === k
                 ? { background: INK, color: "#fff" }
-                : { background: "#eef1f4", color: "#5c6b7a" }}>
+                : { background: "#EEF0EA", color: "#5B6660" }}>
               {t(k === "doc" ? "tabDoc" : "tabProd")}
             </button>))}
         </div>
         <textarea value={txt} onChange={(e) => setTxt(e.target.value)}
           rows={7} placeholder={t("clsPh")}
           className="w-full rounded-xl p-3 text-sm"
-          style={{ border: "1px solid #d5dbe3", background: "#fbfcfd", resize: "vertical" }} />
+          style={{ border: "1px solid #D8DCD3", background: "#FAFBF8", resize: "vertical" }} />
         <div className="mt-3 flex flex-wrap gap-2">
           <Btn icon={Play} onClick={run} disabled={!txt.trim()}>{t("classifyL")}</Btn>
           <Btn tone="ghost" icon={MessageSquare} onClick={askAI} disabled={!txt.trim() || aiBusy}>
@@ -1950,7 +2002,7 @@ function M11({ t, lang }) {
       </Card>
       <Card title={t("results")}>
         {!res && !ai && !aiErr ? (
-          <div className="text-sm py-10 text-center" style={{ color: "#98a2b0" }}>{t("noneFound")}</div>
+          <div className="text-sm py-10 text-center" style={{ color: "#98A19A" }}>{t("noneFound")}</div>
         ) : (
           <div className="space-y-4">
             {res && (res.top.v === 0 ? (
@@ -1960,27 +2012,27 @@ function M11({ t, lang }) {
                 {res.rows.map((x, i) => (
                   <div key={x.k}>
                     <div className="flex justify-between text-sm mb-1">
-                      <span style={{ color: i === 0 ? INK : "#5c6b7a", fontWeight: i === 0 ? 700 : 400 }}>
+                      <span style={{ color: i === 0 ? INK : "#5B6660", fontWeight: i === 0 ? 700 : 400 }}>
                         {t(x.k)} {i === 0 && <Pill color={ACCENT}>top</Pill>}
                       </span>
                       <span className="cs-num font-semibold">{(x.p * 100).toFixed(0)}%</span>
                     </div>
-                    <div className="h-2 rounded-full" style={{ background: "#eef1f4" }}>
+                    <div className="h-2 rounded-full" style={{ background: "#EEF0EA" }}>
                       <div className="cs-bar h-2 rounded-full"
-                           style={{ width: Math.max(2, x.p * 100) + "%", background: i === 0 ? ACCENT : "#b9c3cf",
+                           style={{ width: Math.max(2, x.p * 100) + "%", background: i === 0 ? ACCENT : "#BFC7BD",
                                     transitionDelay: i * 50 + "ms" }} />
                     </div>
                   </div>))}
               </div>
             ))}
             {(ai || aiErr) && (
-              <div className="cs-up pt-3" style={{ borderTop: "1px solid #eef1f4" }}>
+              <div className="cs-up pt-3" style={{ borderTop: "1px solid #EEF0EA" }}>
                 {aiErr ? (
                   <div className="text-xs" style={{ color: dk(RED) }}>{t("apiErr")}: {aiErr.slice(0, 120)}</div>
                 ) : (
                   <div className="flex flex-wrap items-center gap-2 text-sm">
-                    <span style={{ color: "#5c6b7a" }}>{t("aiSays")}:</span>
-                    <Pill color="#6b5ca5">{t(ai.key)}</Pill>
+                    <span style={{ color: "#5B6660" }}>{t("aiSays")}:</span>
+                    <Pill color="#44586B">{t(ai.key)}</Pill>
                     <span className="cs-num font-semibold">{Math.round((ai.confidence || 0) * 100)}%</span>
                     {res && res.top.v > 0 && (
                       <Pill color={agree ? ACCENT : AMBER}>{agree ? t("agreeL") : t("disagreeL")}</Pill>)}
@@ -2052,7 +2104,7 @@ function M12({ t, lang }) {
         <textarea value={txt} onChange={(e) => setTxt(e.target.value)}
           rows={11} placeholder={t("ocrPaste")}
           className="w-full rounded-xl p-3 text-sm cs-num"
-          style={{ border: "1px solid #d5dbe3", background: "#fbfcfd", resize: "vertical" }} />
+          style={{ border: "1px solid #D8DCD3", background: "#FAFBF8", resize: "vertical" }} />
         <div className="mt-3 flex flex-wrap gap-2">
           <Btn icon={Play} onClick={parseTxt} disabled={!txt.trim()}>{t("extractL")}</Btn>
           <Btn tone="ghost" onClick={() => setTxt(T[lang].sampleInv)}>{t("sampleL")}</Btn>
@@ -2065,23 +2117,23 @@ function M12({ t, lang }) {
       </Card>
       <Card title={t("results")}>
         {!res ? (
-          <div className="text-sm py-10 text-center" style={{ color: "#98a2b0" }}>{t("noneFound")}</div>
+          <div className="text-sm py-10 text-center" style={{ color: "#98A19A" }}>{t("noneFound")}</div>
         ) : (
           <div className="space-y-4">
             <table className="w-full">
               <tbody>{res.f.map(([k, v]) => (
                 <tr key={k}>
-                  <Td><span style={{ color: "#7c8797" }}>{t(k)}</span></Td>
+                  <Td><span style={{ color: "#79837D" }}>{t(k)}</span></Td>
                   <Td right strong>
                     {v != null && v !== "" ? <span className="cs-num">{v}</span>
-                      : <span style={{ color: "#c3ccd6" }}>{"\u2014"}</span>}
+                      : <span style={{ color: "#C9CFC5" }}>{"\u2014"}</span>}
                   </Td>
                 </tr>))}
               </tbody>
             </table>
             {res.items.length > 0 && (
               <div>
-                <div className="text-xs font-semibold mb-1" style={{ color: "#7c8797" }}>{t("linesT")}</div>
+                <div className="text-xs font-semibold mb-1" style={{ color: "#79837D" }}>{t("linesT")}</div>
                 <table className="w-full">
                   <thead><tr>
                     <Th>{t("skuL")}</Th><Th right>{t("qty")}</Th>
@@ -2098,12 +2150,12 @@ function M12({ t, lang }) {
                 </table>
               </div>)}
             {res.checks.length > 0 && (
-              <div className="space-y-1.5 pt-2" style={{ borderTop: "1px solid #eef1f4" }}>
+              <div className="space-y-1.5 pt-2" style={{ borderTop: "1px solid #EEF0EA" }}>
                 {res.checks.map((c) => (
                   <div key={c.k} className="flex items-center gap-2 text-sm">
                     {c.ok ? <CheckCircle2 size={16} style={{ color: dk(ACCENT) }} />
                           : <XCircle size={16} style={{ color: dk(RED) }} />}
-                    <span style={{ color: "#5c6b7a" }}>{t(c.k)}</span>
+                    <span style={{ color: "#5B6660" }}>{t(c.k)}</span>
                     <Pill color={c.ok ? ACCENT : RED}>
                       {c.ok ? t("okB") : t("failB") + " " + fmt(c.d, 2)}
                     </Pill>
@@ -2148,12 +2200,12 @@ function M13({ t, lang }) {
       <div ref={boxRef} className="space-y-3 overflow-y-auto pr-1" style={{ height: 380 }}>
         {msgs.length === 0 && !busy && (
           <div className="h-full flex flex-col items-center justify-center gap-3">
-            <div className="text-sm" style={{ color: "#98a2b0" }}>{t("chatHello")}</div>
+            <div className="text-sm" style={{ color: "#98A19A" }}>{t("chatHello")}</div>
             <div className="flex flex-wrap justify-center gap-2">
               {[t("askEx1"), t("askEx2")].map((q) => (
                 <button key={q} onClick={() => setInp(q)}
                   className="cs-btn rounded-full px-3 py-1.5 text-xs font-semibold"
-                  style={{ background: "#eef1f4", color: "#5c6b7a", border: "1px solid #d5dbe3" }}>
+                  style={{ background: "#EEF0EA", color: "#5B6660", border: "1px solid #D8DCD3" }}>
                   {q}
                 </button>))}
             </div>
@@ -2174,7 +2226,7 @@ function M13({ t, lang }) {
             <span className="inline-flex gap-1 items-center" aria-label="typing">
               {[0, 1, 2].map((i) => (
                 <span key={i} className="cs-dot inline-block w-1.5 h-1.5 rounded-full"
-                      style={{ background: "#8896a6", animationDelay: i * 0.18 + "s" }} />))}
+                      style={{ background: "#8B948E", animationDelay: i * 0.18 + "s" }} />))}
             </span>
           </Bubble>)}
       </div>
@@ -2183,7 +2235,7 @@ function M13({ t, lang }) {
           onKeyDown={(e) => e.key === "Enter" && send()}
           placeholder={t("chatPh")}
           className="flex-1 rounded-xl px-3 py-2.5 text-sm"
-          style={{ border: "1px solid #d5dbe3", background: "#fbfcfd" }} />
+          style={{ border: "1px solid #D8DCD3", background: "#FAFBF8" }} />
         <Btn icon={Send} onClick={send} disabled={busy || !inp.trim()}>{t("send")}</Btn>
       </div>
     </Card>
@@ -2191,10 +2243,10 @@ function M13({ t, lang }) {
 }
 const Bubble = ({ who, children }) => (
   <div className={"cs-pop flex " + (who === "u" ? "justify-end" : "justify-start")}>
-    <div className="max-w-[82%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed"
+    <div className="max-w-[82%] rounded-xl px-3.5 py-2.5 text-[13px] leading-relaxed"
          style={who === "u"
-           ? { background: INK, color: "#f2f5f8", borderBottomRightRadius: 6 }
-           : { background: "#eef1f4", color: INK, borderBottomLeftRadius: 6 }}>
+           ? { background: "#11201B", color: "#EAF1EC", borderBottomRightRadius: 5 }
+           : { background: "#F4F6F1", color: INK, border: "1px solid #E9ECE4", borderBottomLeftRadius: 5 }}>
       {children}
     </div>
   </div>
@@ -2223,10 +2275,10 @@ function IsoBox({ box, t }) {
   return (
     <div>
       <svg viewBox={"0 0 " + W.toFixed(1) + " " + Hh.toFixed(1)} className="w-full"
-           style={{ maxHeight: 300, background: "#f7f9fa", borderRadius: 12 }}>
+           style={{ maxHeight: 300, background: "#F6F7F3", borderRadius: 12 }}>
         {EDG.map(([a, b], i) => (
           <line key={i} x1={corners[a][0]} y1={corners[a][1]} x2={corners[b][0]} y2={corners[b][1]}
-                stroke="#b9c3cf" strokeWidth="0.8" strokeDasharray="3 2" />))}
+                stroke="#BFC7BD" strokeWidth="0.8" strokeDasharray="3 2" />))}
         {ordered.map((u, i) => {
           const pal = ITEM_PAL[hashN(u.name) % ITEM_PAL.length];
           const { x, y, z, l, w, h } = u;
@@ -2275,9 +2327,9 @@ function M14({ t }) {
       {res && (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           <Kpi l={t("usedL")} v={res.boxes.length} />
-          <Kpi l={t("baseL").split(":")[0]} v={res.base.boxes} tone="#8896a6" />
+          <Kpi l={t("baseL").split(":")[0]} v={res.base.boxes} tone="#8B948E" />
           <Kpi l={t("savingL")} v={(save > 0 ? "\u2212" : "") + Math.abs(save).toFixed(0) + "%"} tone={AMBER} />
-          <Kpi l={t("fillL")} v={Math.round(res.boxes.reduce((s2, b) => s2 + fillPct(b), 0) / res.boxes.length) + "%"} tone="#3b6ea5" />
+          <Kpi l={t("fillL")} v={Math.round(res.boxes.reduce((s2, b) => s2 + fillPct(b), 0) / res.boxes.length) + "%"} tone="#5E7488" />
         </div>)}
       <div className="grid lg:grid-cols-2 gap-4">
         <Card title={t("itemsL")}
@@ -2291,22 +2343,22 @@ function M14({ t }) {
               <tr key={i}>
                 <Td><input value={x.name} onChange={(e) => upd(i, "name", e.target.value)}
                       className="w-24 rounded-lg px-2 py-1 text-sm"
-                      style={{ border: "1px solid #e2e7ee", background: "#fbfcfd" }} /></Td>
+                      style={{ border: "1px solid #E0E4DC", background: "#FAFBF8" }} /></Td>
                 {["l", "w", "h", "qty", "wt"].map((f) => (
                   <Td right key={f}>
                     <input type="number" value={x[f]} onChange={(e) => upd(i, f, e.target.value)}
                       className="cs-num w-14 rounded-lg px-1.5 py-1 text-sm text-right"
-                      style={{ border: "1px solid #e2e7ee", background: "#fbfcfd" }} />
+                      style={{ border: "1px solid #E0E4DC", background: "#FAFBF8" }} />
                   </Td>))}
               </tr>))}
             </tbody>
           </table>
-          <div className="mt-3 pt-3" style={{ borderTop: "1px solid #eef1f4" }}>
+          <div className="mt-3 pt-3" style={{ borderTop: "1px solid #EEF0EA" }}>
             <CsvBtn t={t} hint={t("csvHintItems")} onRows={onCsv} />
           </div>
-          <div className="mt-3 flex flex-wrap gap-2 text-xs" style={{ color: "#7c8797" }}>
+          <div className="mt-3 flex flex-wrap gap-2 text-xs" style={{ color: "#79837D" }}>
             {BOX_TYPES.map((b) => (
-              <span key={b.id} className="rounded-lg px-2 py-1" style={{ background: "#f2f4f7" }}>
+              <span key={b.id} className="rounded-lg px-2 py-1" style={{ background: "#F1F4EF" }}>
                 {b.id}: {b.l + "×" + b.w + "×" + b.h}
               </span>))}
           </div>
@@ -2314,7 +2366,7 @@ function M14({ t }) {
         <Card title={t("layoutT")}
               extra={res && <Btn tone="ghost" icon={Download} onClick={exp}>{t("exportL")}</Btn>}>
           {!res ? (
-            <div className="text-sm py-10 text-center" style={{ color: "#98a2b0" }}>{t("noneFound")}</div>
+            <div className="text-sm py-10 text-center" style={{ color: "#98A19A" }}>{t("noneFound")}</div>
           ) : (
             <div className="space-y-3">
               <div className="flex flex-wrap gap-1.5">
@@ -2323,7 +2375,7 @@ function M14({ t }) {
                     className="cs-btn rounded-lg px-2.5 py-1 text-xs font-semibold"
                     style={i === sel
                       ? { background: INK, color: "#fff" }
-                      : { background: "#eef1f4", color: "#5c6b7a" }}>
+                      : { background: "#EEF0EA", color: "#5B6660" }}>
                     {(i + 1) + " · " + b.type.id + " " + fillPct(b) + "%"}
                   </button>))}
               </div>
@@ -2380,7 +2432,7 @@ function M15({ t }) {
     { n: "SCENARIO " + shift + "% \u2192 rail", mode: "", km: "", tn: "",
       co2e_kg: Math.round(scen * 1000), kwh: "" },
   ], "co2-report", "CO2");
-  const mCol = { road: AMBER, rail: ACCENT, sea: "#3b6ea5", air: RED };
+  const mCol = { road: AMBER, rail: ACCENT, sea: "#5E7488", air: RED };
   const byMode = ["road", "rail", "sea", "air"].map((m) => ({
     m: t(m),
     v: +rows.filter((r) => r.mode === m)
@@ -2391,7 +2443,7 @@ function M15({ t }) {
     <div className="space-y-4">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <Kpi l={"CO2e, " + t("tonsL")} v={co2.toFixed(2)} />
-        <Kpi l={t("energyL")} v={fmt(kwh) + " " + "kWh"} tone="#3b6ea5" />
+        <Kpi l={t("energyL")} v={fmt(kwh) + " " + "kWh"} tone="#5E7488" />
         <Kpi l={t("scenL")} v={scen.toFixed(2) + " " + t("tonsL")} tone={ACCENT}
              s={"\u2212" + (co2 > 0 ? ((savedT / co2) * 100).toFixed(0) : 0) + "%"} />
         <Kpi l={t("co2SaveL")} v={fmt(savedT * price, 0) + " \u20ac"} tone={AMBER}
@@ -2410,31 +2462,31 @@ function M15({ t }) {
                 <Td>
                   <select value={r.mode} onChange={(e) => upd(i, "mode", e.target.value)}
                           className="rounded-lg px-2 py-1 text-sm"
-                          style={{ border: "1px solid #d5dbe3", background: "#fff" }}>
+                          style={{ border: "1px solid #D8DCD3", background: "#fff" }}>
                     {["road","rail","sea","air"].map((m) => <option key={m} value={m}>{t(m)}</option>)}
                   </select>
                 </Td>
                 <Td right>
                   <input type="number" value={r.km} onChange={(e) => upd(i, "km", e.target.value)}
                     className="cs-num w-20 rounded-lg px-1.5 py-1 text-sm text-right"
-                    style={{ border: "1px solid #e2e7ee", background: "#fbfcfd" }} />
+                    style={{ border: "1px solid #E0E4DC", background: "#FAFBF8" }} />
                 </Td>
                 <Td right>
                   <input type="number" value={r.tn} onChange={(e) => upd(i, "tn", e.target.value)}
                     className="cs-num w-16 rounded-lg px-1.5 py-1 text-sm text-right"
-                    style={{ border: "1px solid #e2e7ee", background: "#fbfcfd" }} />
+                    style={{ border: "1px solid #E0E4DC", background: "#FAFBF8" }} />
                 </Td>
                 <Td right strong>{fmt(r.km * r.tn * EF[r.mode] / 1000)}</Td>
                 <Td right>
                   <button onClick={() => del(i)} className="cs-btn p-1 rounded-md"
-                          style={{ color: "#98a2b0" }} title={t("del")}>
+                          style={{ color: "#98A19A" }} title={t("del")}>
                     <Trash2 size={13} />
                   </button>
                 </Td>
               </tr>))}
             </tbody>
           </table>
-          <div className="mt-3 flex flex-wrap items-center gap-3 pt-3" style={{ borderTop: "1px solid #eef1f4" }}>
+          <div className="mt-3 flex flex-wrap items-center gap-3 pt-3" style={{ borderTop: "1px solid #EEF0EA" }}>
             <Btn tone="ghost" onClick={add}>+ {t("add")}</Btn>
             <CsvBtn t={t} hint={t("csvHintShip")} onRows={onCsv} />
           </div>
@@ -2445,11 +2497,11 @@ function M15({ t }) {
             <Num l={t("co2PriceL")} v={price} set={(v) => up("co2Price", v)} step={5} />
           </div>
           <ResponsiveContainer width="100%" height={170}>
-            <BarChart data={byMode} margin={{ left: -18, right: 6, top: 12 }}>
-              <CartesianGrid stroke="#eef1f4" vertical={false} />
+            <BarChart data={byMode} margin={{ left: -10, right: 6, top: 12 }}>
+              <CartesianGrid stroke="#EEF0EA" vertical={false} />
               <XAxis dataKey="m" tick={{ fontSize: 10 }} />
               <YAxis tick={{ fontSize: 10 }} />
-              <Tooltip />
+              <Tooltip {...TIP} />
               <Bar dataKey="v" name={"CO2e, " + t("tonsL")} radius={[6, 6, 0, 0]}>
                 {byMode.map((x, i) => <Cell key={i} fill={x.c} />)}
               </Bar>
@@ -2472,9 +2524,6 @@ const MODS = [
   { id: 13, C: M13, ic: MessageSquare },  { id: 14, C: M14, ic: Boxes },
   { id: 15, C: M15, ic: Leaf },
 ];
-const MCOLOR = { 1: ACCENT, 2: "#3b6ea5", 3: "#6b5ca5", 4: "#b0578d", 5: ACCENT,
-  6: "#8a8f3c", 7: RED, 8: "#6b5ca5", 9: RED, 10: "#3b6ea5",
-  11: "#b0578d", 12: AMBER, 13: ACCENT, 14: "#4c9a6a", 15: "#4c9a6a" };
 const SNAP_METRICS = (s2) => {
   const d2 = computeDerived(s2);
   const co2v = s2.ship.reduce((a, r) => a + (r.km * r.tn * EF[r.mode]) / 1e6, 0);
@@ -2527,7 +2576,7 @@ function Shell() {
       <span className="font-semibold">{label}</span>
       <Btn tone="ghost" icon={Save} onClick={() => save(slot)}>{t("saveS")}</Btn>
       <Btn tone="ghost" onClick={() => load(slot)} disabled={!snaps[slot]}>{t("loadS")}</Btn>
-      <span className="text-xs" style={{ color: "#98a2b0" }}>
+      <span className="text-xs" style={{ color: "#98A19A" }}>
         {snaps[slot] ? new Date(snaps[slot].ts).toLocaleString(LOCALE[lang]) : t("emptyS")}
       </span>
     </div>
@@ -2535,73 +2584,100 @@ function Shell() {
   return (
     <div className="cs-root min-h-screen flex" style={{ background: BG, color: INK }}>
       <style>{CSS}</style>
-      {/* -------- sidebar -------- */}
-      <aside className={"fixed lg:static z-40 inset-y-0 left-0 w-64 flex-col transition-transform lg:translate-x-0 " +
+      {/* -------- sidebar: the nav is the pipeline — a meridian rail with 15 stations -------- */}
+      <aside className={"fixed lg:static z-40 inset-y-0 left-0 w-[248px] flex-col transition-transform lg:translate-x-0 " +
         (open ? "translate-x-0 flex" : "-translate-x-full lg:flex hidden lg:flex")}
-        style={{ background: INK }}>
-        <div className="px-5 pt-6 pb-4 flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-xl flex items-center justify-center"
-               style={{ background: ACCENT }}>
-            <Boxes size={17} color="#fff" />
+        style={{ background: "#0F1613", borderRight: "1px solid rgba(255,255,255,0.05)" }}>
+        <div className="px-5 pt-6 pb-5 flex items-center gap-2.5"
+             style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+          <div className="w-[30px] h-[30px] rounded-lg flex items-center justify-center flex-shrink-0"
+               style={{ background: "linear-gradient(135deg,#12896D,#0B6450)",
+                        boxShadow: "0 0 0 1px rgba(46,194,155,0.25), 0 4px 12px rgba(14,124,99,0.3)" }}>
+            <span className="cs-diamond" style={{ background: "#fff", width: 9, height: 9 }} />
           </div>
           <div>
-            <div className="cs-display font-bold text-white leading-none">ChainSense</div>
-            <div className="text-[10px] tracking-widest mt-1" style={{ color: "#8fa0b3" }}>SUPPLY AI</div>
+            <div className="cs-display font-bold text-[15px] leading-none" style={{ color: "#F0F5F1" }}>ChainSense</div>
+            <div className="cs-eyebrow mt-1.5" style={{ color: "#5F6F67", fontSize: 9 }}>SUPPLY INTELLIGENCE</div>
           </div>
         </div>
-        <nav className="flex-1 overflow-y-auto px-3 pb-4 space-y-0.5">
+        <nav className="relative flex-1 overflow-y-auto pl-3 pr-3 py-4">
+          {/* the rail */}
+          <div className="absolute top-6 bottom-6 pointer-events-none"
+               style={{ left: 27, width: 1, background: "rgba(255,255,255,0.09)" }} />
           {MODS.map((m) => {
             const on = m.id === mod;
-            const Ic = m.ic;
             return (
               <button key={m.id} onClick={() => { up("ui.mod", m.id); setOpen(false); }}
-                className="cs-nav w-full flex items-center gap-2.5 rounded-xl px-3 py-2 text-left"
-                style={on ? { background: "#1c2a3d", color: "#fff" } : { color: "#a9b7c6" }}>
-                <Ic size={15} style={{ color: on ? ACCENT : "#7488a0", flexShrink: 0 }} />
-                <span className="text-[13px] font-medium leading-tight">{t("m" + m.id)}</span>
+                className="cs-nav relative w-full flex items-center gap-2.5 rounded-lg pl-2.5 pr-2 py-[7px] text-left"
+                style={on ? { background: "rgba(46,194,155,0.09)" } : {}}>
+                <span className="cs-diamond relative z-10"
+                      style={on
+                        ? { width: 8, height: 8, background: "#2EC29B", boxShadow: "0 0 0 3px rgba(46,194,155,0.18)" }
+                        : { width: 6, height: 6, background: "transparent", border: "1px solid #4C5A53", marginLeft: 1, marginRight: 1 }} />
+                <span className="cs-num text-[10px] flex-shrink-0" style={{ color: on ? "#2EC29B" : "#556059" }}>
+                  {String(m.id).padStart(2, "0")}
+                </span>
+                <span className="text-[12.5px] leading-tight"
+                      style={{ color: on ? "#F0F5F1" : "#93A099", fontWeight: on ? 600 : 450 }}>
+                  {t("m" + m.id)}
+                </span>
               </button>);
           })}
         </nav>
+        <div className="px-5 py-4 cs-eyebrow" style={{ borderTop: "1px solid rgba(255,255,255,0.06)", color: "#4C5A53", fontSize: 9 }}>
+          SC-01 → SC-15 · {t("tagline").split("·")[0].trim()}
+        </div>
       </aside>
       {open && <div className="fixed inset-0 bg-black/40 z-30 lg:hidden" onClick={() => setOpen(false)} />}
       {/* -------- main -------- */}
       <main className="flex-1 min-w-0 flex flex-col">
-        <header className="sticky top-0 z-20 px-4 lg:px-8 py-3.5 flex items-center gap-3"
-                style={{ background: "rgba(238,241,244,0.92)", backdropFilter: "blur(8px)",
-                         borderBottom: "1px solid #dde3ea" }}>
-          <button className="lg:hidden p-2 -ml-2 rounded-lg" onClick={() => setOpen(true)}>
+        <header className="sticky top-0 z-20 px-4 lg:px-8 h-[58px] flex items-center gap-3"
+                style={{ background: "rgba(243,245,240,0.88)", backdropFilter: "blur(10px)",
+                         borderBottom: "1px solid " + LINE }}>
+          <button className="lg:hidden p-2 -ml-2 rounded-lg" onClick={() => setOpen(true)}
+                  style={{ color: MUT }} aria-label="menu">
             <Menu size={20} />
           </button>
-          <div className="min-w-0">
-            <div className="text-[10px] font-bold tracking-widest" style={{ color: dk(ACCENT) }}>
+          <div className="min-w-0 flex items-center gap-3">
+            <span className="cs-num text-[10px] font-semibold px-2 py-1 rounded-md flex-shrink-0"
+                  style={{ background: ACCENT + "10", color: dk(ACCENT), border: "1px solid " + ACCENT + "26",
+                           letterSpacing: "0.08em" }}>
               SC-{String(mod).padStart(2, "0")}
-            </div>
-            <h1 className="cs-display text-lg lg:text-xl font-bold leading-tight truncate">{t("m" + mod)}</h1>
+            </span>
+            <h1 className="cs-display text-[17px] lg:text-[19px] font-bold leading-tight truncate"
+                style={{ letterSpacing: "-0.02em" }}>{t("m" + mod)}</h1>
           </div>
-          <div className="ml-auto flex items-center gap-1.5">
-            <button onClick={() => setCmp(!cmp)} title={t("compareT")}
+          <div className="ml-auto flex items-center gap-2">
+            <button onClick={() => setCmp(!cmp)} title={t("compareT")} aria-pressed={cmp}
               className="cs-btn p-2 rounded-lg"
-              style={cmp ? { background: INK, color: "#fff" } : { background: "#e3e8ee", color: "#5c6b7a" }}>
-              <ArrowLeftRight size={15} />
+              style={cmp ? { background: INK, color: "#fff", border: "1px solid " + INK }
+                         : { background: "#fff", color: MUT, border: "1px solid #D8DCD3" }}>
+              <ArrowLeftRight size={14} strokeWidth={2.2} />
             </button>
-            <button onClick={() => up("ui.help", !showHelp)} title={t("helpL")}
+            <button onClick={() => up("ui.help", !showHelp)} title={t("helpL")} aria-pressed={showHelp}
               className="cs-btn p-2 rounded-lg"
-              style={showHelp ? { background: INK, color: "#fff" } : { background: "#e3e8ee", color: "#5c6b7a" }}>
-              <HelpCircle size={15} />
+              style={showHelp ? { background: INK, color: "#fff", border: "1px solid " + INK }
+                              : { background: "#fff", color: MUT, border: "1px solid #D8DCD3" }}>
+              <HelpCircle size={14} strokeWidth={2.2} />
             </button>
-            {["en", "ru", "az"].map((l) => (
-              <button key={l} onClick={() => up("ui.lang", l)}
-                className="cs-btn rounded-lg px-2.5 py-1.5 text-xs font-bold uppercase"
-                style={lang === l ? { background: INK, color: "#fff" } : { background: "#e3e8ee", color: "#5c6b7a" }}>
-                {l}
-              </button>))}
+            <div className="flex items-center rounded-lg p-[3px] gap-[2px]"
+                 style={{ background: "#E9ECE4", border: "1px solid #DFE3DA" }}>
+              {["en", "ru", "az"].map((l) => (
+                <button key={l} onClick={() => up("ui.lang", l)}
+                  className="cs-btn cs-num rounded-[6px] px-2 py-1 text-[10px] font-semibold uppercase"
+                  style={lang === l
+                    ? { background: "#fff", color: INK, boxShadow: "0 1px 2px rgba(15,23,19,.12)" }
+                    : { background: "transparent", color: FAINT }}>
+                  {l}
+                </button>))}
+            </div>
           </div>
         </header>
-        <div className="px-4 lg:px-8 py-5 space-y-4 max-w-[1240px] w-full mx-auto">
+        <div className="px-4 lg:px-8 py-6 space-y-4 max-w-[1240px] w-full mx-auto">
           {cmp && metrics && (
-            <div className="cs-up cs-card bg-white rounded-2xl p-4" style={{ border: "1px solid #dde3ea" }}>
+            <div className="cs-up cs-card bg-white rounded-xl p-4" style={{ border: "1px solid " + LINE }}>
               <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
-                <div className="cs-display font-bold">{t("compareT")}</div>
+                <div className="cs-display font-bold text-[15px]" style={{ letterSpacing: "-0.01em" }}>{t("compareT")}</div>
                 <Btn tone="ghost" icon={RefreshCw} onClick={() => dispatch({ t: "reset" })}>{t("resetDemo")}</Btn>
               </div>
               <div className="grid md:grid-cols-2 gap-2 mb-3">
@@ -2625,13 +2701,14 @@ function Shell() {
               </div>
             </div>)}
           {showHelp && (
-            <div key={"h" + mod + lang} className="cs-up cs-card rounded-2xl p-4 flex gap-3 bg-white"
-                 style={{ border: "1px solid #dde3ea", borderLeft: "4px solid " + (MCOLOR[mod] || ACCENT) }}>
-              <HelpCircle size={17} style={{ color: MCOLOR[mod] || ACCENT, flexShrink: 0, marginTop: 2 }} />
-              <div>
-                <div className="text-xs font-bold tracking-wide mb-1" style={{ color: "#7c8797" }}>{t("helpL")}</div>
-                <div className="text-sm leading-relaxed" style={{ color: "#3d4a5c" }}>{t("h" + mod)}</div>
+            <div key={"h" + mod + lang} className="cs-up relative rounded-xl py-3.5 pl-5 pr-4"
+                 style={{ background: "#F7F8F4", border: "1px solid #E9ECE4" }}>
+              <div className="absolute left-0 top-3 bottom-3 rounded-r" style={{ width: 2, background: ACCENT + "66" }} />
+              <div className="cs-eyebrow flex items-center gap-2 mb-1.5" style={{ color: dk(ACCENT) }}>
+                <span className="cs-diamond" style={{ width: 5, height: 5, background: ACCENT }} />
+                {t("helpL")}
               </div>
+              <div className="text-[13px] leading-relaxed" style={{ color: "#48534D", maxWidth: 920 }}>{t("h" + mod)}</div>
             </div>)}
           <div key={mod} className="cs-up">
             <CsBoundary key={"b" + mod} title={t("crashT")} retry={t("retryL")}>

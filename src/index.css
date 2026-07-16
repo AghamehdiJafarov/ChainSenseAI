@@ -1,16 +1,74 @@
-@import url("https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap");
+/* ChainSense · Meridian design system — base layer
+   Fonts are self-hosted via @fontsource (no external requests). */
+@import "@fontsource/schibsted-grotesk/500.css";
+@import "@fontsource/schibsted-grotesk/700.css";
+@import "@fontsource/schibsted-grotesk/800.css";
+@import "@fontsource/inter/400.css";
+@import "@fontsource/inter/500.css";
+@import "@fontsource/inter/600.css";
+@import "@fontsource/spline-sans-mono/500.css";
+@import "@fontsource/spline-sans-mono/600.css";
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-html, body, #root {
-  margin: 0;
-  padding: 0;
-  min-height: 100vh;
+:root {
+  /* ink — dark surfaces with a faint pine cast */
+  --ink-950: #0A100E;
+  --ink-900: #0D1512;
+  --ink-850: #111A16;
+  --ink-800: #16211C;
+  /* paper — light workspace */
+  --paper: #F3F5F0;
+  --surface: #FFFFFF;
+  --sunken: #F7F8F4;
+  --hairline: #E4E7E0;
+  --hairline-soft: #EEF0EA;
+  /* text */
+  --text-ink: #141B17;
+  --text-mut: #5B6660;
+  --text-faint: #8B948E;
+  /* brand */
+  --jade-700: #0B6450;
+  --jade-600: #0E7C63;
+  --jade-400: #2EC29B;
+  --brass-500: #B9893B;
+  --brass-300: #D9B36C;
+  --signal-600: #BE4B32;
+  --slate-500: #5E7488;
 }
+
+html, body, #root { margin: 0; padding: 0; min-height: 100vh; }
 
 body {
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  background: var(--paper);
+  color: var(--text-ink);
+}
+
+::selection { background: rgba(14, 124, 99, 0.18); }
+
+/* ---- recharts: one quiet instrument voice for every chart ---- */
+.cs-root .recharts-cartesian-axis-tick text,
+.cs-root .recharts-polar-angle-axis-tick text,
+.cs-root .recharts-polar-radius-axis-tick text {
+  font-family: "Spline Sans Mono", ui-monospace, monospace;
+  font-size: 10px;
+  fill: #8B948E;
+  letter-spacing: 0.02em;
+}
+.cs-root .recharts-cartesian-axis line,
+.cs-root .recharts-cartesian-axis-tick-line { stroke: #DDE2D8; }
+.cs-root .recharts-legend-item-text {
+  font-family: Inter, sans-serif;
+  font-size: 11px !important;
+  color: #5B6660 !important;
+}
+.cs-root .recharts-legend-wrapper { padding-top: 4px; }
+.cs-root .recharts-default-tooltip { border-radius: 10px; }
+.cs-root .recharts-tooltip-item, .cs-root .recharts-tooltip-label {
+  font-family: "Spline Sans Mono", ui-monospace, monospace;
 }
