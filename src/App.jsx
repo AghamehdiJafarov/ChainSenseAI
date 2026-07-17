@@ -8,6 +8,7 @@ import {
   Tooltip, Legend, ResponsiveContainer, ReferenceLine, RadarChart, Radar,
   PolarGrid, PolarAngleAxis, PolarRadiusAxis, Cell,
 } from "recharts";
+import { ModIcon, famOf } from "./icons.jsx";
 import {
   TrendingUp, Package, ShoppingCart, Users, Route, Warehouse, Wrench, ScanSearch,
   ShieldAlert, Timer, Tags, FileText, MessageSquare, Boxes, Leaf, Send, Upload,
@@ -52,7 +53,7 @@ const TIP = {
     borderRadius: 10, boxShadow: "0 12px 32px rgba(10,20,16,0.35)",
     padding: "8px 12px",
   },
-  labelStyle: { color: "#9DABA3", fontSize: 10, fontFamily: "'Spline Sans Mono', monospace",
+  labelStyle: { color: "#9DABA3", fontSize: 10, fontFamily: "'JetBrains Mono', monospace",
     letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: 4 },
   itemStyle: { fontSize: 12, color: "#E9EFEA", padding: 0 },
 };
@@ -1002,9 +1003,9 @@ class CsBoundary extends React.Component {
 /* ------------------------------ UI atoms ------------------------------ */
 const CSS = `
 .cs-root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,sans-serif;color:${INK};font-size:14px;}
-.cs-display{font-family:'Schibsted Grotesk',Inter,ui-sans-serif,sans-serif;letter-spacing:-0.022em;}
-.cs-num{font-family:'Spline Sans Mono',ui-monospace,SFMono-Regular,monospace;font-variant-numeric:tabular-nums;letter-spacing:-0.02em;}
-.cs-eyebrow{font-family:'Spline Sans Mono',ui-monospace,monospace;font-size:10px;font-weight:600;letter-spacing:0.13em;text-transform:uppercase;color:${FAINT};}
+.cs-display{font-family:'Golos Text',Inter,ui-sans-serif,sans-serif;letter-spacing:-0.02em;}
+.cs-num{font-family:'JetBrains Mono',ui-monospace,SFMono-Regular,monospace;font-variant-numeric:tabular-nums;letter-spacing:-0.02em;}
+.cs-eyebrow{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:10px;font-weight:600;letter-spacing:0.13em;text-transform:uppercase;color:${FAINT};}
 .cs-root ::-webkit-scrollbar{width:8px;height:8px}
 .cs-root ::-webkit-scrollbar-thumb{background:#CBD1C8;border-radius:8px}
 .cs-root ::-webkit-scrollbar-thumb:hover{background:#B6BDB3}
@@ -1032,16 +1033,25 @@ const CSS = `
 .cs-dot{animation:csBlink 1.1s ease-in-out infinite}
 .cs-pulse{animation:csPulse 1.8s ease-out infinite}
 .cs-bar{transition:width .7s cubic-bezier(.2,.7,.2,1)}
-.cs-btn{transition:transform .15s ease,box-shadow .15s ease,opacity .15s ease,background .2s ease,color .2s ease,border-color .2s ease}
-.cs-btn:hover:not(:disabled){transform:translateY(-1px)}
-.cs-btn:active:not(:disabled){transform:translateY(0) scale(.98)}
-.cs-btn-primary{box-shadow:0 1px 2px rgba(11,100,80,.25),inset 0 1px 0 rgba(255,255,255,.12)}
-.cs-btn-primary:hover:not(:disabled){box-shadow:0 6px 16px rgba(14,124,99,.28),inset 0 1px 0 rgba(255,255,255,.12);background:#0D7159!important}
-.cs-btn-ghost:hover:not(:disabled){box-shadow:0 3px 10px rgba(15,23,19,.08);border-color:#C4CBC1!important}
+.cs-btn{transition:box-shadow .14s ease,opacity .14s ease,background .14s ease,color .14s ease,border-color .14s ease,filter .14s ease}
+.cs-btn-primary{background:linear-gradient(180deg,#149478,#0C6B54)!important;border:1px solid #0A5D49!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.22),inset 0 -1px 0 rgba(6,52,41,.28),0 1px 2px rgba(12,80,63,.3),0 5px 14px -4px rgba(14,124,99,.4)}
+.cs-btn-primary:hover:not(:disabled){background:linear-gradient(180deg,#18A386,#0E7A60)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.24),inset 0 -1px 0 rgba(6,52,41,.28),0 1px 2px rgba(12,80,63,.3),0 8px 20px -5px rgba(14,124,99,.5)}
+.cs-btn-primary:active:not(:disabled){background:linear-gradient(180deg,#0B6450,#0A5A47)!important;
+  box-shadow:inset 0 2px 5px rgba(5,40,32,.35),0 1px 1px rgba(12,80,63,.2)}
+.cs-btn-ghost{box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 1px 2px rgba(16,25,21,.06)}
+.cs-btn-ghost:hover:not(:disabled){border-color:#C6CDC3!important;background:#FAFBF8!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 3px 10px rgba(16,25,21,.09)}
+.cs-btn-ghost:active:not(:disabled){background:#F1F3EE!important;box-shadow:inset 0 1.5px 4px rgba(16,25,21,.12)}
+.cs-iconbtn{transition:background .14s ease,box-shadow .14s ease,border-color .14s ease,color .14s ease}
+.cs-iconbtn:hover{border-color:#C6CDC3!important;box-shadow:0 2px 8px rgba(16,25,21,.08)}
+.cs-iconbtn:active{box-shadow:inset 0 1.5px 4px rgba(16,25,21,.14)}
+.cs-vpop{display:inline-block;animation:csPop .3s cubic-bezier(.2,.75,.3,1.2) both}
 .cs-card{transition:box-shadow .25s ease,border-color .25s ease}
-.cs-card:hover{box-shadow:0 10px 26px -8px rgba(15,23,19,.1)}
+.cs-card:hover{box-shadow:0 14px 34px -12px rgba(15,23,19,.12)}
 .cs-nav{transition:background .18s ease,color .18s ease,border-color .18s ease}
-.cs-nav:hover{background:rgba(255,255,255,.05)}
+.cs-nav:hover{background:#EFF3EE}
 .cs-diamond{width:7px;height:7px;transform:rotate(45deg);flex-shrink:0}
 .cs-root table tbody tr{transition:background .15s ease}
 .cs-root table tbody tr:hover{background:#F8F9F5}
@@ -1075,7 +1085,9 @@ const Kpi = ({ l, v, s, tone }) => (
       {tone && <span className="cs-diamond" style={{ background: KPI_TONE[tone] || tone, width: 6, height: 6 }} />}
       <span className="cs-eyebrow" style={{ color: "#79837D" }}>{l}</span>
     </div>
-    <div className="cs-num text-[22px] leading-none font-semibold" style={{ color: INK }}>{v}</div>
+    <div className="cs-num text-[22px] leading-none font-semibold" style={{ color: INK }}>
+      <span key={String(v)} className="cs-vpop">{v}</span>
+    </div>
     {s && <div className="text-[11px] mt-1.5" style={{ color: FAINT }}>{s}</div>}
   </div>
 );
@@ -1117,7 +1129,7 @@ const Btn = ({ children, onClick, tone = "primary", disabled, icon: I }) => (
 );
 const Th = ({ children, right }) => (
   <th className={"px-3 py-2 " + (right ? "text-right" : "text-left")}
-      style={{ color: FAINT, borderBottom: "1px solid " + LINE, fontFamily: "'Spline Sans Mono', monospace",
+      style={{ color: FAINT, borderBottom: "1px solid " + LINE, fontFamily: "'JetBrains Mono', monospace",
                fontSize: 10, fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase",
                whiteSpace: "nowrap" }}>{children}</th>
 );
@@ -2582,92 +2594,95 @@ function Shell() {
     </div>
   );
   return (
-    <div className="cs-root min-h-screen flex" style={{ background: BG, color: INK }}>
+    <div className="cs-root min-h-screen flex" style={{ background: "linear-gradient(180deg,#F7F9F5, " + BG + " 240px)", color: INK }}>
       <style>{CSS}</style>
-      {/* -------- sidebar: the nav is the pipeline — a meridian rail with 15 stations -------- */}
+      {/* -------- sidebar: light panel, family-coloured icon chips, sliding jade indicator -------- */}
       <aside className={"fixed lg:static z-40 inset-y-0 left-0 w-[248px] flex-col transition-transform lg:translate-x-0 " +
         (open ? "translate-x-0 flex" : "-translate-x-full lg:flex hidden lg:flex")}
-        style={{ background: "#0F1613", borderRight: "1px solid rgba(255,255,255,0.05)" }}>
-        <div className="px-5 pt-6 pb-5 flex items-center gap-2.5"
-             style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-          <div className="w-[30px] h-[30px] rounded-lg flex items-center justify-center flex-shrink-0"
-               style={{ background: "linear-gradient(135deg,#12896D,#0B6450)",
-                        boxShadow: "0 0 0 1px rgba(46,194,155,0.25), 0 4px 12px rgba(14,124,99,0.3)" }}>
+        style={{ background: "#FBFCFA", borderRight: "1px solid #E7EAE2" }}>
+        <div className="px-4 pt-5 pb-4 flex items-center gap-2.5"
+             style={{ borderBottom: "1px solid #EEF1EA" }}>
+          <div className="w-[32px] h-[32px] rounded-[9px] flex items-center justify-center flex-shrink-0"
+               style={{ background: "linear-gradient(180deg,#149478,#0B6450)",
+                        boxShadow: "inset 0 1px 0 rgba(255,255,255,.25), 0 3px 8px rgba(14,124,99,.3)" }}>
             <span className="cs-diamond" style={{ background: "#fff", width: 9, height: 9 }} />
           </div>
           <div>
-            <div className="cs-display font-bold text-[15px] leading-none" style={{ color: "#F0F5F1" }}>ChainSense</div>
-            <div className="cs-eyebrow mt-1.5" style={{ color: "#5F6F67", fontSize: 9 }}>SUPPLY INTELLIGENCE</div>
+            <div className="cs-display font-bold text-[15px] leading-none" style={{ color: INK }}>ChainSense</div>
+            <div className="cs-eyebrow mt-1" style={{ color: "#9AA39C", fontSize: 8.5 }}>SUPPLY INTELLIGENCE</div>
           </div>
         </div>
-        <nav className="relative flex-1 overflow-y-auto pl-3 pr-3 py-4">
-          {/* the rail */}
-          <div className="absolute top-6 bottom-6 pointer-events-none"
-               style={{ left: 27, width: 1, background: "rgba(255,255,255,0.09)" }} />
+        <nav className="flex-1 overflow-y-auto px-2.5 py-3">
           {MODS.map((m) => {
             const on = m.id === mod;
+            const fc = famOf(m.id);
             return (
               <button key={m.id} onClick={() => { up("ui.mod", m.id); setOpen(false); }}
-                className="cs-nav relative w-full flex items-center gap-2.5 rounded-lg pl-2.5 pr-2 py-[7px] text-left"
-                style={on ? { background: "rgba(46,194,155,0.09)" } : {}}>
-                <span className="cs-diamond relative z-10"
-                      style={on
-                        ? { width: 8, height: 8, background: "#2EC29B", boxShadow: "0 0 0 3px rgba(46,194,155,0.18)" }
-                        : { width: 6, height: 6, background: "transparent", border: "1px solid #4C5A53", marginLeft: 1, marginRight: 1 }} />
-                <span className="cs-num text-[10px] flex-shrink-0" style={{ color: on ? "#2EC29B" : "#556059" }}>
-                  {String(m.id).padStart(2, "0")}
-                </span>
-                <span className="text-[12.5px] leading-tight"
-                      style={{ color: on ? "#F0F5F1" : "#93A099", fontWeight: on ? 600 : 450 }}>
+                className="cs-nav relative w-full flex items-center gap-2.5 rounded-[10px] pl-2.5 pr-2 py-[5px] text-left"
+                style={on ? { background: "#EAF3EE" } : {}}>
+                <span className="absolute left-0 top-1/2 -translate-y-1/2 rounded-r-full"
+                      style={{ width: 3, background: ACCENT,
+                               height: on ? 22 : 0, opacity: on ? 1 : 0,
+                               transition: "height .22s cubic-bezier(.2,.7,.2,1), opacity .18s ease" }} />
+                <ModIcon id={m.id} size={28} radius={8} />
+                <span className="flex-1 text-[12.5px] leading-tight"
+                      style={{ color: on ? "#0B4A3B" : "#3E4A44", fontWeight: on ? 650 : 480 }}>
                   {t("m" + m.id)}
+                </span>
+                <span className="cs-num text-[9px]" style={{ color: on ? fc[1] : "#B4BCB2" }}>
+                  {String(m.id).padStart(2, "0")}
                 </span>
               </button>);
           })}
         </nav>
-        <div className="px-5 py-4 cs-eyebrow" style={{ borderTop: "1px solid rgba(255,255,255,0.06)", color: "#4C5A53", fontSize: 9 }}>
-          SC-01 → SC-15 · {t("tagline").split("·")[0].trim()}
+        <div className="px-4 py-3 cs-eyebrow flex items-center gap-2"
+             style={{ borderTop: "1px solid #EEF1EA", color: "#9AA39C", fontSize: 8.5 }}>
+          <span className="cs-diamond" style={{ width: 5, height: 5, background: ACCENT }} />
+          SC-01 → SC-15 · ONE PIPELINE
         </div>
       </aside>
       {open && <div className="fixed inset-0 bg-black/40 z-30 lg:hidden" onClick={() => setOpen(false)} />}
       {/* -------- main -------- */}
       <main className="flex-1 min-w-0 flex flex-col">
-        <header className="sticky top-0 z-20 px-4 lg:px-8 h-[58px] flex items-center gap-3"
-                style={{ background: "rgba(243,245,240,0.88)", backdropFilter: "blur(10px)",
+        <header className="sticky top-0 z-20 px-4 lg:px-7 h-[58px] flex items-center gap-3"
+                style={{ background: "rgba(255,255,255,0.86)", backdropFilter: "blur(10px)",
                          borderBottom: "1px solid " + LINE }}>
           <button className="lg:hidden p-2 -ml-2 rounded-lg" onClick={() => setOpen(true)}
                   style={{ color: MUT }} aria-label="menu">
             <Menu size={20} />
           </button>
-          <div className="min-w-0 flex items-center gap-3">
-            <span className="cs-num text-[10px] font-semibold px-2 py-1 rounded-md flex-shrink-0"
-                  style={{ background: ACCENT + "10", color: dk(ACCENT), border: "1px solid " + ACCENT + "26",
-                           letterSpacing: "0.08em" }}>
-              SC-{String(mod).padStart(2, "0")}
-            </span>
-            <h1 className="cs-display text-[17px] lg:text-[19px] font-bold leading-tight truncate"
-                style={{ letterSpacing: "-0.02em" }}>{t("m" + mod)}</h1>
+          <div className="min-w-0 flex items-center gap-2.5">
+            <ModIcon id={mod} size={34} radius={10} />
+            <div className="min-w-0">
+              <div className="cs-num text-[9px] font-semibold leading-none mb-[3px]"
+                   style={{ color: famOf(mod)[1], letterSpacing: "0.08em" }}>
+                SC-{String(mod).padStart(2, "0")} · {["", "PLAN","PLAN","PLAN","SOURCE","MOVE","OPERATE","OPERATE","OPERATE","RISK","MOVE","SOURCE","SOURCE","AI","MOVE","ESG"][mod]}
+              </div>
+              <h1 className="cs-display text-[16.5px] lg:text-[18px] font-bold leading-tight truncate"
+                  style={{ letterSpacing: "-0.02em" }}>{t("m" + mod)}</h1>
+            </div>
           </div>
           <div className="ml-auto flex items-center gap-2">
             <button onClick={() => setCmp(!cmp)} title={t("compareT")} aria-pressed={cmp}
-              className="cs-btn p-2 rounded-lg"
+              className="cs-iconbtn p-2 rounded-[9px]"
               style={cmp ? { background: INK, color: "#fff", border: "1px solid " + INK }
-                         : { background: "#fff", color: MUT, border: "1px solid #D8DCD3" }}>
+                         : { background: "#fff", color: MUT, border: "1px solid #DDE2D9" }}>
               <ArrowLeftRight size={14} strokeWidth={2.2} />
             </button>
             <button onClick={() => up("ui.help", !showHelp)} title={t("helpL")} aria-pressed={showHelp}
-              className="cs-btn p-2 rounded-lg"
+              className="cs-iconbtn p-2 rounded-[9px]"
               style={showHelp ? { background: INK, color: "#fff", border: "1px solid " + INK }
-                              : { background: "#fff", color: MUT, border: "1px solid #D8DCD3" }}>
+                              : { background: "#fff", color: MUT, border: "1px solid #DDE2D9" }}>
               <HelpCircle size={14} strokeWidth={2.2} />
             </button>
-            <div className="flex items-center rounded-lg p-[3px] gap-[2px]"
-                 style={{ background: "#E9ECE4", border: "1px solid #DFE3DA" }}>
+            <div className="flex items-center rounded-[9px] p-[3px] gap-[2px]"
+                 style={{ background: "#F0F2ED", border: "1px solid #E2E6DD" }}>
               {["en", "ru", "az"].map((l) => (
                 <button key={l} onClick={() => up("ui.lang", l)}
                   className="cs-btn cs-num rounded-[6px] px-2 py-1 text-[10px] font-semibold uppercase"
                   style={lang === l
-                    ? { background: "#fff", color: INK, boxShadow: "0 1px 2px rgba(15,23,19,.12)" }
-                    : { background: "transparent", color: FAINT }}>
+                    ? { background: "#fff", color: INK, boxShadow: "0 1px 2px rgba(15,23,19,.12)", border: "1px solid #E2E6DD" }
+                    : { background: "transparent", color: FAINT, border: "1px solid transparent" }}>
                   {l}
                 </button>))}
             </div>

@@ -9,9 +9,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@fontsource/golos-text": "^5.2.8",
     "@fontsource/inter": "^5.2.8",
-    "@fontsource/schibsted-grotesk": "^5.2.8",
-    "@fontsource/spline-sans-mono": "^5.2.8",
+    "@fontsource/jetbrains-mono": "^5.2.8",
     "lucide-react": "^0.383.0",
     "papaparse": "^5.4.1",
     "react": "^18.3.1",
