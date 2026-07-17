@@ -8,12 +8,13 @@ import {
   Tooltip, Legend, ResponsiveContainer, ReferenceLine, RadarChart, Radar,
   PolarGrid, PolarAngleAxis, PolarRadiusAxis, Cell,
 } from "recharts";
+import { Link } from "react-router-dom";
 import { ModIcon, famOf } from "./icons.jsx";
 import {
   TrendingUp, Package, ShoppingCart, Users, Route, Warehouse, Wrench, ScanSearch,
   ShieldAlert, Timer, Tags, FileText, MessageSquare, Boxes, Leaf, Send, Upload,
   RefreshCw, HelpCircle, Trash2, Menu, Play,
-  Link2, Download, ArrowLeftRight, CheckCircle2, XCircle, Save,
+  Link2, Download, ArrowLeftRight, CheckCircle2, XCircle, Save, Home,
 } from "lucide-react";
 
 import Papa from "papaparse";
@@ -2551,6 +2552,15 @@ function Shell() {
   const t = (k) => (T[lang] && T[lang][k]) ?? T.en[k] ?? k;
   const [open, setOpen] = useState(false);
   const [cmp, setCmp] = useState(false);
+  /* deep links: /app?m=6 opens module 6; the URL follows the active module */
+  useEffect(() => {
+    const m = parseInt(new URLSearchParams(window.location.search).get("m"), 10);
+    if (m >= 1 && m <= 15) up("ui.mod", m);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  useEffect(() => {
+    try { window.history.replaceState(null, "", "/app?m=" + mod); } catch {}
+  }, [mod]);
   const [snaps, setSnaps] = useState({ a: null, b: null });
   useEffect(() => { (async () => {
     for (const slot of ["a", "b"]) {
@@ -2600,18 +2610,23 @@ function Shell() {
       <aside className={"fixed lg:static z-40 inset-y-0 left-0 w-[248px] flex-col transition-transform lg:translate-x-0 " +
         (open ? "translate-x-0 flex" : "-translate-x-full lg:flex hidden lg:flex")}
         style={{ background: "#FBFCFA", borderRight: "1px solid #E7EAE2" }}>
-        <div className="px-4 pt-5 pb-4 flex items-center gap-2.5"
-             style={{ borderBottom: "1px solid #EEF1EA" }}>
+        <Link to="/" title={{ ru: "На главную", en: "Back to home", az: "Ana səhifəyə" }[lang]}
+              className="cs-nav px-4 pt-5 pb-4 flex items-center gap-2.5"
+              style={{ borderBottom: "1px solid #EEF1EA", textDecoration: "none" }}
+              onMouseEnter={(e) => { const h = e.currentTarget.querySelector(".cs-home"); if (h) h.style.color = ACCENT; }}
+              onMouseLeave={(e) => { const h = e.currentTarget.querySelector(".cs-home"); if (h) h.style.color = "#B4BCB2"; }}>
           <div className="w-[32px] h-[32px] rounded-[9px] flex items-center justify-center flex-shrink-0"
                style={{ background: "linear-gradient(180deg,#149478,#0B6450)",
                         boxShadow: "inset 0 1px 0 rgba(255,255,255,.25), 0 3px 8px rgba(14,124,99,.3)" }}>
             <span className="cs-diamond" style={{ background: "#fff", width: 9, height: 9 }} />
           </div>
-          <div>
+          <div className="flex-1">
             <div className="cs-display font-bold text-[15px] leading-none" style={{ color: INK }}>ChainSense</div>
             <div className="cs-eyebrow mt-1" style={{ color: "#9AA39C", fontSize: 8.5 }}>SUPPLY INTELLIGENCE</div>
           </div>
-        </div>
+          <Home size={14} strokeWidth={2.1} className="cs-home"
+                style={{ color: "#B4BCB2", transition: "color .15s" }} />
+        </Link>
         <nav className="flex-1 overflow-y-auto px-2.5 py-3">
           {MODS.map((m) => {
             const on = m.id === mod;

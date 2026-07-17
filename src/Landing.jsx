@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ArrowRight, Play, Globe, Download, FileText } from "lucide-react";
 import { ModIcon, FAMC } from "./icons.jsx";
 
@@ -59,6 +59,12 @@ const CSS = `
 .lp-tile:hover { border-color: #CBD2C8; box-shadow: 0 16px 38px -14px rgba(16,25,21,.16); }
 .lp-tile .chipwrap { transition: transform .22s cubic-bezier(.2,.7,.2,1); display: inline-flex; }
 .lp-tile:hover .chipwrap { transform: scale(1.07); }
+.lp-tile { color: inherit; }
+.lp-tilearrow { opacity: 0; transform: translateX(-4px); transition: opacity .2s ease, transform .2s ease; }
+.lp-tile:hover .lp-tilearrow { opacity: 1; transform: translateX(0); }
+.lp-play { transition: box-shadow .18s ease, background .18s ease; }
+button:hover .lp-play { background: linear-gradient(180deg,#18A386,#0E7A60);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.28), 0 18px 52px -8px rgba(14,124,99,.65); }
 
 /* hero floating chips */
 @keyframes lpFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
@@ -147,6 +153,8 @@ const MODULES = [
 
 export default function Landing() {
   useReveal();
+  const nav = useNavigate();
+  const [playVid, setPlayVid] = useState(false);
   const [lang, setLang] = useState("ru");
   const T = {
     ru: {
@@ -306,7 +314,10 @@ export default function Landing() {
         {N.map(([x, y, id, code], i) => {
           const c = FAMC[{1:"jade",2:"jade",3:"jade",4:"violet",5:"sky",9:"coral",15:"leaf"}[id]];
           return (
-            <g key={i} transform={`translate(${x},${y})`}>
+            <g key={i} transform={`translate(${x},${y})`} onClick={() => nav("/app?m=" + id)}
+               style={{ cursor: "pointer" }} role="link" tabIndex={0}
+               onKeyDown={(e) => e.key === "Enter" && nav("/app?m=" + id)}>
+              <title>{"SC-" + String(id).padStart(2, "0") + " · " + name(id)}</title>
               <rect x="-18" y="-18" width="36" height="36" rx="8" transform="rotate(45)"
                     fill="#fff" stroke={c[2]} strokeWidth="1.6" />
               <rect x="-18" y="-18" width="36" height="36" rx="8" transform="rotate(45)"
@@ -400,16 +411,16 @@ export default function Landing() {
 
           {/* product-led stage: real screenshots of the working platform */}
           <div className="reveal relative h-[470px] hidden sm:block" style={{ transitionDelay: ".14s" }}>
-            <div className="absolute rounded-[14px] overflow-hidden"
+            <Link to="/app?m=1" className="absolute rounded-[14px] overflow-hidden"
                  style={{ top: 4, right: -36, width: 640, border: "1px solid #E3E7E0",
                           boxShadow: "0 48px 110px -34px rgba(15,27,22,.32), 0 10px 30px -12px rgba(15,27,22,.12)" }}>
               <img src="/shots/dash.png" alt="ChainSense — прогноз спроса" style={{ width: "100%", display: "block" }} />
-            </div>
-            <div className="absolute rounded-[13px] overflow-hidden"
+            </Link>
+            <Link to="/app?m=9" className="absolute rounded-[13px] overflow-hidden"
                  style={{ bottom: 12, left: -10, width: 330, border: "1px solid #E3E7E0",
                           boxShadow: "0 32px 74px -24px rgba(15,27,22,.3)" }}>
               <img src="/shots/risk.png" alt="ChainSense — анализ рисков" style={{ width: "100%", display: "block" }} />
-            </div>
+            </Link>
             <div className="lp-chipf absolute rounded-xl px-4 py-3"
                  style={{ top: -12, right: 132, background: "#fff", border: "1px solid #E3E7E0",
                           boxShadow: "0 16px 40px -16px rgba(15,27,22,.26)" }}>
@@ -472,17 +483,20 @@ export default function Landing() {
           <SectionHead eyebrow={t.mod_eyebrow} h={t.mod_h} p={t.mod_p} />
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
             {MODULES.map((m, i) => (
-              <div key={m.id} className="reveal lp-tile" style={{ transitionDelay: (i * 0.03) + "s" }}>
+              <Link key={m.id} to={"/app?m=" + m.id} className="reveal lp-tile block"
+                    style={{ transitionDelay: (i * 0.03) + "s", textDecoration: "none" }}>
                 <div className="flex items-start justify-between mb-3.5">
                   <span className="chipwrap"><ModIcon id={m.id} size={42} radius={12} /></span>
                   <span className="lp-num text-[9.5px] pt-1" style={{ color: "#AEB6AD", letterSpacing: ".08em" }}>
                     SC-{String(m.id).padStart(2, "0")}
                   </span>
                 </div>
-                <div className="lp-display font-semibold text-[14px]" style={{ color: "#17211C", letterSpacing: "-0.01em" }}>
+                <div className="lp-display font-semibold text-[14px] flex items-center gap-1.5"
+                     style={{ color: "#17211C", letterSpacing: "-0.01em" }}>
                   {m[lang]}
+                  <ArrowRight size={12} className="lp-tilearrow" style={{ color: JADE_D }} />
                 </div>
-              </div>))}
+              </Link>))}
           </div>
           <div className="reveal flex flex-wrap gap-x-5 gap-y-2 mt-7 justify-center">
             {Object.entries(t.leg).map(([k, l]) => (
@@ -543,14 +557,39 @@ export default function Landing() {
                          az: "Video ID-ni Landing.jsx faylının əvvəlindəki YT_ID dəyişəninə daxil et" }[lang]}
                     </div>
                   </div>
-                ) : (
+                ) : playVid ? (
                   <iframe
                     style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: 0 }}
-                    src={"https://www.youtube-nocookie.com/embed/" + YT_ID}
+                    src={"https://www.youtube-nocookie.com/embed/" + YT_ID + "?autoplay=1&rel=0"}
                     title="ChainSense promo"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen
                   />
+                ) : (
+                  /* click-to-play facade: crisp 1280px poster instead of YouTube's blurry embed preview */
+                  <button onClick={() => setPlayVid(true)} aria-label="Play promo video"
+                          style={{ position: "absolute", inset: 0, width: "100%", height: "100%",
+                                   padding: 0, border: 0, cursor: "pointer", background: "#0D1512", display: "block" }}>
+                    <img src={"https://i.ytimg.com/vi/" + YT_ID + "/maxresdefault.jpg"} alt=""
+                         style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
+                         onError={(e) => {
+                           const el = e.currentTarget;
+                           if (!el.dataset.f) { el.dataset.f = 1; el.src = "https://i.ytimg.com/vi/" + YT_ID + "/sddefault.jpg"; }
+                           else if (el.dataset.f === "1") { el.dataset.f = 2; el.src = "https://i.ytimg.com/vi/" + YT_ID + "/hqdefault.jpg"; }
+                           else el.style.display = "none";
+                         }} />
+                    <span style={{ position: "absolute", inset: 0,
+                                   background: "linear-gradient(180deg, rgba(10,16,14,.06), rgba(10,16,14,.34))" }} />
+                    <span className="lp-play" style={{ position: "absolute", left: "50%", top: "50%",
+                                   transform: "translate(-50%,-50%)", width: 74, height: 74, borderRadius: "50%",
+                                   background: "linear-gradient(180deg,#149478,#0C6B54)", border: "1px solid #0A5D49",
+                                   display: "flex", alignItems: "center", justifyContent: "center",
+                                   boxShadow: "inset 0 1px 0 rgba(255,255,255,.25), 0 14px 40px -8px rgba(10,20,16,.55)" }}>
+                      <svg width="22" height="24" viewBox="0 0 22 24" style={{ marginLeft: 4 }}>
+                        <path d="M2 2.6 C2 1.1 3.6 .2 4.9 1 L20 10.4 c1.2 .8 1.2 2.5 0 3.2 L4.9 23 C3.6 23.8 2 22.9 2 21.4 Z" fill="#fff" />
+                      </svg>
+                    </span>
+                  </button>
                 )}
               </div>
             </div>
